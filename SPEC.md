@@ -91,7 +91,7 @@ Give Claude Code a measured, inspectable, honest account of how a recording soun
 - **UC-3 Measure one property.** "Is the vocal on *Wet Sand* double-tracked?"
 - **UC-4 Compare.** "Which of these three records has the driest drums?"
 - **UC-5 Calibrate.** The listener scores a batch by ear. The harness reports agreement per metric.
-- **UC-6 Control group, ear only.** The listener scores FEEL by ear on records they dislike and records they love while playing them on Spotify, using external playback mode (§7.4.3). No purchase is needed. Detectors run later on whatever subset the listener chooses to own. This is the experiment the profile says can be run today.
+- **UC-6 Control group, ear only.** The listener scores FEEL by ear on records they dislike and records they love while playing them on Spotify, using external playback mode (§7.4.4). No purchase is needed. Detectors run later on whatever subset the listener chooses to own. This is the experiment the profile says can be run today.
 - **UC-7 Benchmark.** Run [docs/evaluation-plan.md](docs/evaluation-plan.md).
 - **UC-8 History.** The listener imports their Spotify extended streaming history, subject to §6.2.
 
@@ -173,15 +173,18 @@ This section reflects the project's reading of third-party terms on the date abo
 - **REQ-SRC-01** The harness MUST analyze only assets the listener has placed in the local library. It MUST NOT fetch audio from any network service.
 - **REQ-SRC-02** The harness MUST NOT capture, record, loop back or intercept audio from Spotify or any other streaming client. It MUST NOT include, document or link to tooling that does.
 - **REQ-SRC-03** Ingest MUST refuse files carrying DRM it cannot decode. The harness MUST NOT include or invoke DRM circumvention.
-- **REQ-SRC-04** Ingest SHOULD record an optional listener-supplied `source` label per asset (`bandcamp`, `itunes`, `amazon`, `qobuz`, `hdtracks`, `artist_store`, `cd_rip`, `vinyl_rip`, `other`). The harness cannot verify it.
+- **REQ-SRC-04** Ingest SHOULD record an optional listener-supplied `source` label per asset (`owned_purchase`, `freegal`, `free_download`, `cc_licensed`, `bandcamp`, `itunes`, `amazon`, `qobuz`, `hdtracks`, `artist_store`, `cd_rip`, `vinyl_rip`, `other`). The harness cannot verify it.
 - **REQ-SRC-05** Store licences generally permit personal, non-commercial use only. Bandcamp's terms, for example, grant use "solely for personal, non-commercial use". Headphones' documentation MUST say so, and MUST say that anyone using Headphones commercially clears rights themselves.
 - **REQ-SRC-06** Golden-set and validation assets (§11.4) MUST be run only by the person who owns them. Only aggregate numbers and `pcm_sha256` references may be published.
 
-The practical path, in order (see [ADR-0001](docs/adr/0001-owned-audio-only.md)):
+The listener wants a plan that costs nothing. The free path, in order (see [ADR-0001](docs/adr/0001-owned-audio-only.md) and [docs/sourcing-guide.md](docs/sourcing-guide.md)):
 
-1. **Use what you already own.** `headphones library add` on existing files and CD rips. This costs nothing.
-2. **Buy DRM-free downloads.** Major-label catalogs, which include most of the listener's anchor artists, are generally sold DRM-free on the iTunes Store (AAC) and Amazon (MP3). Independent releases are often on Bandcamp or Qobuz in lossless formats. Availability varies by artist and country and MUST be checked per purchase.
-3. **Rip CDs you own** where local law allows private copying. Rules differ by country.
+1. **What the listener already owns**, including past purchases re-downloaded from the stores they came from.
+2. **Freegal Music** through a public library card: DRM-free MP3s the listener keeps, usually about 5 a week. Strongest on Sony Music's labels, known to lack many Universal artists.
+3. **Free and name-your-price releases** on Bandcamp, and Creative Commons music (Free Music Archive, Jamendo, Internet Archive netlabels).
+4. **Ear-only** for everything else, through external playback mode (§7.4.4).
+
+Paying for downloads remains possible and is supported by the sourcing helper's paid mode, but nothing in Headphones or its evaluation requires it.
 
 ### 6.2 Spotify
 
@@ -629,7 +632,7 @@ Governance is in [GOVERNANCE.md](GOVERNANCE.md). Headphones borrows the shape of
 | OI-6 | Two metric definitions need the listener's confirmation: what "cold end" and "hard stop" mean, and what "chopped" hi-hats mean. | METRICS.md uses working definitions marked *pending listener confirmation*. |
 | OI-7 | Whether `htdemucs_6s` separates fiddle, banjo, dobro and mandolin into sensible stems. | Voice gating and timbre novelty across stems (METRICS.md §2.1, F6). Measured in M2. |
 | OI-8 | Vinyl rips carry surface noise that can trigger gap, air and breath detectors. | Assets tagged `vinyl_rip` are reported separately in every study. Noise-floor-relative gates are already used where defined (METRICS.md `structure.ending`, `structure.first_sound`). |
-| OI-9 | Getting every wanted song into the library. | Standalone helper `tools/find_sources.py` and [docs/sourcing-guide.md](docs/sourcing-guide.md). [HEP-0001](docs/heps/0001-sourcing.md) proposes a built-in `headphones want` subsystem. |
+| OI-9 | Getting every wanted song into the library for free. Freegal's weekly allowance and catalog gaps mean some songs stay ear-only. | Standalone helper `tools/find_sources.py` (free mode by default) and [docs/sourcing-guide.md](docs/sourcing-guide.md). [HEP-0001](docs/heps/0001-sourcing.md) proposes a built-in `headphones want` subsystem. |
 
 ## 18. References
 

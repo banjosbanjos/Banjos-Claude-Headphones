@@ -11,11 +11,14 @@ The harness needs audio to measure anything. The listener uses Spotify. Spotify 
 
 Headphones analyzes only audio files the listener has put in a local library. It never fetches, records or intercepts audio from any service. Listening for analysis happens on Headphones' own station (mpv), so the audio analyzed and the audio heard are the same file.
 
-The practical path, cheapest first:
+The listener wants this to cost nothing, so the path is free only (amended 2026-10-05):
 
-1. **What you already own.** Existing downloads and CD rips cost nothing.
-2. **DRM-free downloads.** Most of the listener's anchor artists are on major labels, and major-label catalogs are generally sold DRM-free on the iTunes Store (AAC) and Amazon (MP3). Independent releases are often on Bandcamp or Qobuz in lossless formats. Availability differs by artist and country, so check per purchase.
-3. **Used CDs**, ripped where local private-copying law allows.
+1. **What you already own**, including past purchases re-downloaded from their stores.
+2. **Freegal Music** through a public library card: DRM-free MP3s to keep, usually about 5 a week. Strong on Sony Music's labels, weak on Universal's.
+3. **Free and name-your-price releases** on Bandcamp, and Creative Commons music.
+4. **Ear-only** for the rest, through external playback mode.
+
+Buying downloads or used CDs stays possible for anyone who wants it, but nothing requires it.
 
 Store licences generally allow personal, non-commercial use only. Bandcamp's terms, for example, grant use "solely for personal, non-commercial use". Making stems for personal analysis fits that. Publishing stems or using purchased files for someone else's product does not.
 
@@ -23,7 +26,7 @@ For music the listener does not own, external playback mode (SPEC §7.4.4) lets 
 
 ## Consequences
 
-- A track must be owned before Headphones can measure it. The evaluation plan estimates roughly $150 to $300 of purchases on top of what the listener already owns.
+- A track must be owned before Headphones can measure it. With a free-only plan, coverage is limited by Freegal's weekly allowance and catalog, so some favorite songs stay ear-only. The evaluation uses free sources and costs nothing.
 - Station timestamps are exact for the analyzed asset, which makes tap validation possible.
 - Spotify stays useful for discovery, external playback mode and history, outside Headphones (ADR-0002).
 - Values describe the owned master, which may differ from the streaming master. The skill tells the agent this.

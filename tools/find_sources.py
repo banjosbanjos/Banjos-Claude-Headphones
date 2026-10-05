@@ -1,25 +1,32 @@
-"""Find a legal place to get every song you want, cheapest first.
+"""Find a free, legal way to get every song you want.
 
-Reads a want list (your Spotify data export, or a plain text list), checks
-what you already own, looks each song up on the iTunes Store and
-optionally MusicBrainz, and writes a shopping list that says, per album,
-whether buying the album or single tracks is cheaper. Songs that are not
-sold digitally are checked for CD or vinyl releases. Anything left gets
-search links for other stores and is marked as ear-only for now.
+Free mode (the default) reads your want list (your Spotify data export, or
+a plain text list), checks what you already own, and builds a weekly
+Freegal queue: your most-played missing songs first, sized to your
+library's weekly download allowance. With --musicbrainz it also finds
+songs that have a free download link. Songs you report as not on Freegal
+become ear-only, which you can still mark while listening on Spotify.
+Free mode makes no network calls unless you add --musicbrainz.
+
+Paid mode (--mode paid) is kept for anyone who wants it: it prices songs
+on the iTunes Store and picks album or singles, whichever is cheaper.
 
 It never buys or downloads anything. See docs/sourcing-guide.md.
 
 Usage:
     python3 tools/find_sources.py --spotify-export ~/Downloads/my_spotify_data \
         --library ~/Music --out ~/headphones-sources
-    python3 tools/find_sources.py --list wants.txt --out ~/headphones-sources
+    python3 tools/find_sources.py --list wants.txt --library ~/Music \
+        --out ~/headphones-sources --not-on-freegal missing.txt
 
 A want list file has one song per line as "Artist - Title" or
-"Artist - Title - Album". Lines starting with # are ignored.
+"Artist - Title - Album". Lines starting with # are ignored. The
+--not-on-freegal file uses the same format.
 
-Network: sends artist, title and album text to itunes.apple.com and, with
---musicbrainz, to musicbrainz.org, along with your IP address. Nothing
-else leaves the machine. Results are cached, so a stopped run resumes.
+Network: none in free mode without --musicbrainz. With --musicbrainz,
+artist and title text go to musicbrainz.org. In paid mode they also go to
+itunes.apple.com. Your IP address is visible to those services. Results
+are cached, so a stopped run resumes.
 
 Only the summary is printed. The full list is written to files in --out,
 so the details stay on your machine unless you open them somewhere else.
@@ -89,8 +96,9 @@ class Want:
     title: str
     album: str = ""
     plays: int = 0
-    status: str = "unknown"  # owned, itunes, musicbrainz_store, physical_only, not_found
+    status: str = "unknown"  # owned, free_download, freegal_queue, ear_only, itunes, musicbrainz_store, physical_only, not_found
     route: str = ""
+    week: int = 0
     price: float | None = None
     link: str = ""
     note: str = ""
@@ -259,7 +267,7 @@ def find_itunes_song(f: Fetcher, w: Want, country: str):
     return best if best_score >= MATCH else None
 
 
-def musicbrainz_check(f: Fetcher, w: Want) -> tuple[list[str], list[str]]:
+def musicbrainz_check(f: Fetcher, w: Want, max_releases: int = 6) -> tuple[list[str], list[str]]:
     """Return (store links, physical formats) for the song's releases."""
     base = "https://musicbrainz.org/ws/2/"
     q = f'recording:"{w.title}" AND artist:"{w.artist}"'
@@ -267,12 +275,14 @@ def musicbrainz_check(f: Fetcher, w: Want) -> tuple[list[str], list[str]]:
     releases = []
     for rec in (data or {}).get("recordings", []):
         if similar(w.title, rec.get("title", "")) >= MATCH:
-            releases += [r["id"] for r in rec.get("releases", [])[:6]]
+            releases += [r["id"] for r in rec.get("releases", [])[:max_releases]]
     links, formats = set(), set()
-    for rid in releases[:6]:
+    for rid in releases[:max_releases]:
         rel = f.get("musicbrainz", f"{base}release/{rid}?inc=url-rels+media&fmt=json")
         for r in (rel or {}).get("relations", []):
-            if r.get("type") in ("purchase for download", "download for free"):
+            if r.get("type") == "download for free":
+                links.add("free:" + r["url"]["resource"])
+            elif r.get("type") == "purchase for download":
                 links.add(r["url"]["resource"])
         for m in (rel or {}).get("media", []):
             fmt = (m.get("format") or "").lower()
@@ -297,6 +307,29 @@ def search_links(w: Want) -> str:
 
 
 # ---------------------------------------------------------------- planning
+
+
+def plan_free(wants: list[Want], f: Fetcher | None, per_week: int, not_on_freegal: set[str]) -> None:
+    """Free download links first, then a weekly Freegal queue by plays, then ear-only."""
+    todo = [w for w in wants if w.status == "unknown"]
+    for i, w in enumerate(todo, 1):
+        if f is not None:
+            print(f"\r  songs checked on MusicBrainz {i}/{len(todo)}", end="", file=sys.stderr, flush=True)
+            links, _ = musicbrainz_check(f, w, max_releases=3)
+            free = [link[5:] for link in links if link.startswith("free:")]
+            if free:
+                w.status, w.link, w.note = "free_download", free[0], "free download link from MusicBrainz"
+                continue
+        if w.key in not_on_freegal:
+            w.status = "ear_only"
+            w.note = "you found it is not on Freegal"
+    if f is not None:
+        print(file=sys.stderr)
+    queue = [w for w in todo if w.status == "unknown"]
+    queue.sort(key=lambda w: -w.plays)
+    for n, w in enumerate(queue):
+        w.status = "freegal_queue"
+        w.week = n // per_week + 1
 
 
 def plan(wants: list[Want], f: Fetcher, country: str, use_mb: bool) -> list[AlbumPlan]:
@@ -334,6 +367,7 @@ def plan(wants: list[Want], f: Fetcher, country: str, use_mb: bool) -> list[Albu
                 add(w, hit)
             elif use_mb:
                 links, formats = musicbrainz_check(f, w)
+                links = [link.removeprefix("free:") for link in links]
                 if links:
                     w.status, w.link = "musicbrainz_store", links[0]
                     w.note = "store link from MusicBrainz"
@@ -361,13 +395,84 @@ def plan(wants: list[Want], f: Fetcher, country: str, use_mb: bool) -> list[Albu
 # ---------------------------------------------------------------- output
 
 
-def write_outputs(out: pathlib.Path, wants: list[Want], plans: list[AlbumPlan]) -> dict:
+def bandcamp_link(w: Want) -> str:
+    return f"[Bandcamp](https://bandcamp.com/search?q={urllib.parse.quote_plus(f'{w.artist} {w.title}')})"
+
+
+def write_csv(out: pathlib.Path, wants: list[Want]) -> None:
     out.mkdir(parents=True, exist_ok=True)
     with (out / "sources.csv").open("w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh)
-        writer.writerow(["artist", "title", "album", "plays", "status", "route", "price", "link", "note"])
+        writer.writerow(["artist", "title", "album", "plays", "status", "week", "route", "price", "link", "note"])
         for w in wants:
-            writer.writerow([w.artist, w.title, w.album, w.plays, w.status, w.route, w.price or "", w.link, w.note])
+            writer.writerow([w.artist, w.title, w.album, w.plays, w.status, w.week or "", w.route, w.price or "", w.link, w.note])
+
+
+def write_free_outputs(out: pathlib.Path, wants: list[Want], per_week: int) -> dict:
+    write_csv(out, wants)
+    by = defaultdict(list)
+    for w in wants:
+        by[w.status].append(w)
+    queue = sorted(by["freegal_queue"], key=lambda w: (w.week, -w.plays))
+    weeks = max((w.week for w in queue), default=0)
+    lines = [
+        "# Free plan for your songs",
+        "",
+        "Generated by `tools/find_sources.py` in free mode. Nothing here costs money.",
+        "",
+        "| | Songs |",
+        "|---|---|",
+        f"| Already own | {len(by['owned'])} |",
+        f"| Free download link found | {len(by['free_download'])} |",
+        f"| Freegal queue | {len(queue)} ({per_week} a week, about {weeks} weeks) |",
+        f"| Ear-only for now | {len(by['ear_only'])} |",
+        "",
+        "## Free download links",
+        "",
+    ]
+    for w in by["free_download"]:
+        lines.append(f"- {w.artist} - {w.title}: <{w.link}>")
+    lines += [
+        "",
+        "## Freegal queue",
+        "",
+        "Each week, search your library's Freegal site for that week's songs and download the ones it has. "
+        "Also check the Bandcamp link, since some releases are free or name-your-price (enter $0). "
+        "Add any song you can't find on Freegal to your --not-on-freegal file and rerun. It moves to ear-only "
+        "and the queue moves up. Downloaded songs drop off automatically once they're in your music folder.",
+        "",
+    ]
+    current = 0
+    for w in queue:
+        if w.week != current:
+            current = w.week
+            if current > 52:
+                lines += ["", f"### Later ({len([q for q in queue if q.week > 52])} more songs)", ""]
+                current = 10**9
+            else:
+                lines += ["", f"### Week {current}", ""]
+        plays = f" ({w.plays} plays)" if w.plays else ""
+        lines.append(f"- {w.artist} - {w.title}{plays} · {bandcamp_link(w)}")
+    lines += [
+        "",
+        "## Ear-only for now",
+        "",
+        "Not free anywhere this run could find. You can still mark chills, head-nods and hooks with "
+        "`headphones station --external <spotify-uri>` while you listen on Spotify. If one turns up free later, "
+        "take it off your --not-on-freegal file.",
+        "",
+    ]
+    for w in sorted(by["ear_only"], key=lambda w: -w.plays):
+        lines.append(f"- {w.artist} - {w.title} · {bandcamp_link(w)}")
+    lines += ["", "## Already own", ""]
+    for w in by["owned"]:
+        lines.append(f"- {w.artist} - {w.title}")
+    (out / "free-plan.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {k: len(v) for k, v in by.items()} | {"weeks": weeks}
+
+
+def write_outputs(out: pathlib.Path, wants: list[Want], plans: list[AlbumPlan]) -> dict:
+    write_csv(out, wants)
 
     albums = [ap for ap in plans if ap.wanted and ap.wanted[0].route == "buy album"]
     singles = [w for ap in plans for w in ap.wanted if w.route == "buy single"]
@@ -444,7 +549,11 @@ def main() -> int:
     src.add_argument("--list", type=pathlib.Path, help="text file, one 'Artist - Title' per line")
     ap.add_argument("--library", type=pathlib.Path, action="append", default=[], help="folder of music you own (repeatable)")
     ap.add_argument("--out", type=pathlib.Path, required=True, help="folder for shopping-list.md, sources.csv and the cache")
-    ap.add_argument("--country", default="US", help="iTunes Store country code (default US)")
+    ap.add_argument("--mode", choices=["free", "paid"], default="free", help="free (default): Freegal queue and free links only. paid: iTunes prices")
+    ap.add_argument("--freegal-per-week", type=int, default=5, help="songs your library card allows per week (default 5)")
+    ap.add_argument("--freegal-cards", type=int, default=1, help="number of library cards you hold that include Freegal (default 1)")
+    ap.add_argument("--not-on-freegal", type=pathlib.Path, help="file of 'Artist - Title' lines you could not find on Freegal")
+    ap.add_argument("--country", default="US", help="iTunes Store country code for paid mode (default US)")
     ap.add_argument("--limit", type=int, default=0, help="only check the top N songs (by plays when known)")
     ap.add_argument("--min-plays", type=int, default=0, help="skip songs with fewer plays than this")
     ap.add_argument("--musicbrainz", action="store_true", help="also check MusicBrainz for store links and CD or vinyl releases (slow)")
@@ -466,6 +575,23 @@ def main() -> int:
 
     args.out.mkdir(parents=True, exist_ok=True)
     fetcher = Fetcher(args.out / "cache.json")
+
+    if args.mode == "free":
+        per_week = max(1, args.freegal_per_week * args.freegal_cards)
+        missing = {w.key for w in read_list(args.not_on_freegal)} if args.not_on_freegal else set()
+        try:
+            plan_free(wants, fetcher if args.musicbrainz else None, per_week, missing)
+        finally:
+            fetcher.save()
+        summary = write_free_outputs(args.out, wants, per_week)
+        print("\nSummary (free mode)")
+        for label, key in [("already own", "owned"), ("free download link", "free_download"),
+                           ("Freegal queue", "freegal_queue"), ("ear-only for now", "ear_only")]:
+            print(f"  {label:22} {summary.get(key, 0)}")
+        print(f"  weeks of Freegal       {summary['weeks']} at {per_week} a week")
+        print(f"\nFull plan: {args.out / 'free-plan.md'}")
+        return 0
+
     print(f"Checking {sum(w.status == 'unknown' for w in wants)} songs. "
           f"About {ITUNES_GAP_S * 2:.0f} s per album on the first run, instant on reruns.", file=sys.stderr)
     try:

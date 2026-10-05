@@ -12,7 +12,7 @@ Spotify can't supply the ears either. Its computed audio numbers (tempo, "energy
 
 ## What Headphones does
 
-1. **Listens to audio you own.** Files you already have, DRM-free downloads (iTunes Store, Amazon, Bandcamp, Qobuz), or CDs you've ripped. Spotify audio is never captured.
+1. **Listens to audio you own, gathered for free.** Files you already have, free DRM-free downloads from your library's Freegal service, and free or name-your-price releases on Bandcamp. Spotify audio is never captured.
 2. **Measures what can be measured.** It splits each track into separate instrument tracks (drums, bass, vocals, guitar, piano, other), finds the beat, and checks 35 listening metrics: pocket, ghost notes, kick and bass lock, stereo placement, width, compression pumping, decay, the half-second of silence before a drop, how the song ends, and the rest. See [METRICS.md](METRICS.md).
 3. **Says how it knows.** Every answer is labeled: measured, estimated, a rough proxy, your ear, your play history, something you said, or something reviews say.
 4. **Keeps your ears as the final word.** Some things only you can judge: whether your head moves in the first ten seconds, whether you want it again the moment it ends, the second the chill hits. You mark those with single key presses while you listen. Claude can ask you a question but can never fill in your answer.
@@ -23,7 +23,7 @@ Spotify can't supply the ears either. Its computed audio numbers (tempo, "energy
 
 1. **Install it on your own computer** (Mac, Linux or Windows). It has to run where your music files and headphones are, not in a cloud session. You can still drive it from your phone with Claude Code Remote Control.
 2. **Point it at your music.** `headphones library add ~/Music`. It uses what you already own first.
-3. **Fill the gaps.** Run `python3 tools/find_sources.py` on your Spotify data and it tells you what you own, the cheapest way to buy the rest, and what only exists on CD ([guide](docs/sourcing-guide.md)). The evaluation needs about 120 tracks plus about 40 you've never heard. Expect roughly $150 to $300 if you own none of them already, much less if you do.
+3. **Fill the gaps for free.** Run `python3 tools/find_sources.py` on your Spotify data. It tells you what you own and builds a weekly Freegal download queue, most-played songs first ([guide](docs/sourcing-guide.md)). Songs a free plan can't reach stay ear-only. The evaluation needs about 120 tracks plus about 40 you've never heard, drawn from what you own, Freegal and free Creative Commons music. Cost: nothing.
 4. **Listen in a second terminal.** `headphones station`, then play a track. Tap `c` at a chill, `n` when your head or body moves, `h` when the hook lands, `g` at a gap that hits you, `m` at a kept mistake.
 5. **Answer the Quick Ear form** after each track. Eight questions, mostly yes or no, about two minutes.
 6. **Ask Claude.** "Is the drummer behind the beat on this?" "Run BUILD and FEEL on this album." Claude shows you what was measured and tells you what to check by ear.
@@ -52,7 +52,7 @@ You can also mark chills and answer ear questions while listening on Spotify, wi
 | [docs/security-self-assessment.md](docs/security-self-assessment.md) | Security review in the CNCF TAG Security format |
 | [docs/privacy.md](docs/privacy.md) | What personal data exists, where it lives, how to remove it |
 | [docs/adr/](docs/adr/) | Decision records |
-| [docs/sourcing-guide.md](docs/sourcing-guide.md) | Getting every song you want into your library, and the helper that builds your shopping list |
+| [docs/sourcing-guide.md](docs/sourcing-guide.md) | Getting your songs into your library for free, and the helper that builds your weekly plan |
 | [plugin/](plugin/) | The Claude Code plugin (skill, MCP config, recommended permission rules) |
 | [GOVERNANCE.md](GOVERNANCE.md), [MAINTAINERS.md](MAINTAINERS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), [ADOPTERS.md](ADOPTERS.md) | How the project is run |
 | [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md) | Milestones and changes |

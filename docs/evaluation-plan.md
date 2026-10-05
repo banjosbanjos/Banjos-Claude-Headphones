@@ -30,7 +30,7 @@ This plan is committed before any data is collected. Changes after collection st
 
 That is about 10 minutes per track. Other metrics are validated over time through rotating extras.
 
-**First listens.** Head-nod, hook and chill need first listens. A first listen (SPEC §4) requires no plays in imported history, no prior preview, and the listener's confirmation at the station. Because a track must be owned before it can be analyzed, first-listen tracks come from an **acquisition protocol**: buy whole albums by artists the listener has not heard, and play the deep cuts on the station before anything else. The first-listen count is reported for every study.
+**First listens.** Head-nod, hook and chill need first listens. A first listen (SPEC §4) requires no plays in imported history, no prior preview, and the listener's confirmation at the station. Because a track must be owned before it can be analyzed, first-listen tracks come from an **acquisition protocol**: download free releases (Freegal, Bandcamp free or name-your-price, Creative Commons) by artists the listener has not heard, without previewing them, and play them first on the station. The first-listen count is reported for every study.
 
 **Listener consistency (test-retest).** At least 40 items per benchmark metric are re-scored at least two weeks after the first answer and before any unblinding. Test-retest agreement uses the METRICS.md §4.2 statistics and sets the ceiling used in the `stable` rule. First-listen metrics cannot be retested and are reported with "no ceiling".
 
@@ -40,7 +40,8 @@ That is about 10 minutes per track. Other metrics are validated over time throug
 
 - Only assets in the listener's library (SPEC REQ-SRC-01). First check what is already owned.
 - At least 120 tracks for Studies A and B, covering the anchor artists, picked and acoustic country, small-group jazz, and records outside the profile, plus at least 40 first-listen tracks from the acquisition protocol.
-- **Cost estimate.** About $1.29 per track on the iTunes Store or Amazon, or about $8 to $12 per album. 120 tracks bought as singles is roughly $155. Buying the first-listen tracks as albums adds roughly $80 to $150. Anything already owned or on CD costs nothing.
+- **Cost: nothing.** Tracks come only from free, legal sources ([docs/sourcing-guide.md](sourcing-guide.md)): what the listener already owns, Freegal downloads (about 5 a week per library card), and free or Creative Commons music (Bandcamp free and name-your-price, Free Music Archive, Jamendo, Internet Archive netlabels). Creative Commons music has almost nothing written about it, so it fills the `sparse` stratum, which is where the harness should help most.
+- **Timeline.** At 5 Freegal songs a week, 120 tracks from Freegal alone would take about 24 weeks. What the listener already owns and free music shorten that. Ear capture can run in parallel as tracks arrive.
 - **Split by artist**, never by track: calibration 40%, held-out 40%, confirmation 20%. The confirmation split stays untouched until a metric is a `stable` candidate.
 - **Text availability strata.** Each track is tagged `well_documented` (a Wikipedia article or at least three professional reviews) or `sparse`.
 - **Category balance.** Before the held-out split is sealed, the listener's calibration-split ear answers are used to estimate category prevalence. Where a category of a benchmark metric would have fewer than 10 held-out items, more tracks of that kind are added to the pool (chosen from the listener's library by ear description, not by analyzer output). A metric that still falls short is reported as underpowered, not promoted.
@@ -125,10 +126,10 @@ Each agent statement of a metric value scores 1 if it names its basis in plain w
 
 Runs only if the listener enables history (SPEC REQ-SPOT-04).
 
-- The BUILD criteria were drawn from this listener's play history, so testing them on that same history is circular. Only plays **after** the profile date (2026-10-05) and **before** the track was bought are used.
+- The BUILD criteria were drawn from this listener's play history, so testing them on that same history is circular. Only plays **after** the profile date (2026-10-05) and **before** the track was added to the library are used.
 - Replay rate is adjusted for exposure (plays per week the track was available in the listener's library or playlists).
 - Unknown BUILD criteria are kept as a separate count, never treated as fails.
-- Owned tracks are a restricted range (the listener liked them enough to buy). Reported as a limitation.
+- Owned tracks are a restricted range (the listener liked them enough to go and get them). Reported as a limitation.
 
 ## 11. Reporting
 

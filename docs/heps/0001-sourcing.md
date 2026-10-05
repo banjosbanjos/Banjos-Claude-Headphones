@@ -17,11 +17,11 @@ Headphones only measures owned audio (ADR-0001). The listener wants every song t
 1. **Want list.** `headphones want add "Artist - Title"`, `headphones want import <file>`, and `headphones want import --spotify-export <dir>`. Export import runs locally, keeps only artist, title, album and a play count (plays of 30 s or more), and discards everything else before writing, in line with REQ-SPOT-05. Where AcoustID or MusicBrainz identifies a recording, the entry stores the MBID.
 2. **Owned check.** Match the want list against the library by MBID, then by normalized artist and title.
 3. **Availability check** (`headphones want check`), opt-in, run only on request:
-   - iTunes Search API: album search plus album track lookup, then song search for the rest. At most 20 calls per minute.
+   - iTunes Search API (paid mode only): album search plus album track lookup, then song search for the rest. At most 20 calls per minute.
    - MusicBrainz: store links ("purchase for download", "download for free") and release media formats (CD, vinyl, cassette). At most one call per second, with an identifying User-Agent.
    - Bandcamp, Amazon, Qobuz and Discogs are linked by search URL only. No scraping.
    - Results cached per query.
-4. **Plan.** Per album, buy the album when it costs no more than the wanted songs as singles. Group the output as: already own, buy albums, buy singles, other store links, physical only, not found. Point "not found" songs to Freegal and to external playback mode.
+4. **Plan, free by default.** Group wanted songs as: already own, free download link found (MusicBrainz "download for free"), weekly Freegal queue (most-played first, sized to the listener's weekly allowance and number of cards), and ear-only (songs the listener reports are not on Freegal). The free plan makes no network calls unless MusicBrainz checking is turned on. An optional paid mode prices songs on the iTunes Store and picks album or singles, whichever is cheaper.
 5. **Auto-match on ingest.** When `library add` ingests a file that matches a wanted song, mark it acquired and queue analysis.
 6. **Agent access.** One MCP tool, `hp_want_summary`, returning counts per group and the estimated cost only. It returns no song titles from imported Spotify data. The full list stays in the CLI and in files.
 7. **Never** buy, download or scrape anything.

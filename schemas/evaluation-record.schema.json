@@ -73,7 +73,7 @@
         "lossy": { "type": "boolean" },
         "source": {
           "type": ["string", "null"],
-          "enum": ["bandcamp", "itunes", "amazon", "qobuz", "hdtracks", "artist_store", "cd_rip", "vinyl_rip", "other", null]
+          "enum": ["owned_purchase", "freegal", "free_download", "cc_licensed", "bandcamp", "itunes", "amazon", "qobuz", "hdtracks", "artist_store", "cd_rip", "vinyl_rip", "other", null]
         },
         "identity": {
           "type": "object",

@@ -1,91 +1,86 @@
-# Getting every song you want into Headphones
+# Getting your songs into Headphones for free
 
-Headphones can only measure audio files you own (ADR-0001). This guide gets you as close as the law allows to "every song I'd ever want", for as little money as possible. It also tells you plainly which songs can't be had, so nothing silently goes missing.
+Headphones can only measure audio files you own (ADR-0001). This guide gets as many of your songs as possible into your library **without spending money**, using only legal sources. It also tells you plainly which songs a free plan can't reach, so nothing goes missing without you knowing.
 
-## The short version
+## The honest picture
 
-1. Pull back everything you've already bought.
-2. Run the sourcing helper on your Spotify data. It tells you what you own, what's for sale and the cheapest way to buy it, and what only exists on CD.
-3. Grab free downloads through your library card.
-4. Buy the rest, cheapest route first.
-5. Hunt used CDs for anything not sold as a download.
-6. Whatever is left you can still mark by ear while listening on Spotify.
+Free and legal covers a lot, but not everything.
 
-## 1. Pull back what you already own
+- **Freegal**, through a public library card, is the main free source. It gives DRM-free MP3s you keep forever, usually about 5 songs a week. Its catalog is strongest on Sony Music's labels. It is known to lack many artists on Universal's labels, so some of your anchors won't be there.
+- **Free downloads** on Bandcamp (free or name-your-price, where you can enter $0) and Creative Commons music sites cover independent and lesser-known artists.
+- Everything else stays **ear-only**. You can still mark chills, head-nods and hooks for those songs while they play on Spotify. Headphones just can't measure their sound.
 
-These cost nothing and often cover more than you'd expect.
+At 5 songs a week, Freegal adds up to about 260 songs a year per library card. Your most-played songs go first.
 
-- **iTunes Store purchases.** Every song bought on iTunes since 2009 is DRM-free and can be downloaded again from the Purchased section of the Apple Music app (Mac) or the Apple Music or iTunes app (Windows).
-- **Amazon MP3 purchases.** Downloadable again from your Amazon Music library under Purchased.
-- **Bandcamp purchases.** Your collection page lets you re-download anything you've bought, in any format, including lossless.
-- **Old hard drives, backups and CDs** on a shelf somewhere.
+## Step by step
 
-Apple Music and Amazon Music Unlimited *subscription* downloads don't count. They're DRM-locked rentals, not files you own.
+### 1. Gather what you already own
 
-Put everything in one folder, then `headphones library add` that folder.
+Free, because it's already yours:
 
-## 2. Run the sourcing helper
+- Songs you bought in the past from iTunes, Amazon or Bandcamp can be downloaded again from each store's Purchased or collection page.
+- Old hard drives, backups and CDs.
 
-Ask Spotify for your data on your account page under Account privacy (spotify.com/account/privacy). Ask for the **Extended streaming history**, since play counts are what your profile trusts most. It can take up to 30 days to arrive. The quicker "Account data" export has your saved songs and works too.
+Subscription downloads (Apple Music, Amazon Music Unlimited, Spotify offline) don't count. They're DRM-locked rentals.
+
+Put everything in one folder and run `headphones library add` on it.
+
+### 2. Get a library card with Freegal
+
+Ask your public library whether it offers Freegal Music. Most cards allow about 5 downloads a week, and each library sets its own limit. If you can legitimately hold cards at more than one library system that offers Freegal, each card usually has its own allowance. Check each library's rules.
+
+### 3. Make your free plan
+
+Ask Spotify for your data on your account page under Account privacy (spotify.com/account/privacy). Ask for the **Extended streaming history**, since play counts are what your profile trusts most. It can take up to 30 days to arrive. The quicker "Account data" export has your saved songs and works too. No export yet? Make a text file with one song per line, `Artist - Title`.
 
 Then, in a terminal on your own computer:
 
 ```
 python3 tools/find_sources.py --spotify-export ~/Downloads/my_spotify_data \
-    --library ~/Music --out ~/headphones-sources --musicbrainz
+    --library ~/Music --out ~/headphones-sources
 ```
 
-No Spotify export yet? Make a text file with one song per line, `Artist - Title` or `Artist - Title - Album`, and use `--list wants.txt` instead.
+It writes `free-plan.md` with:
 
-What it does:
+- **Already own**: matched against your music folder.
+- **Freegal queue**: everything else, most-played first, split into weeks at your allowance. Each song has a Bandcamp search link too, since some releases are free there.
+- **Ear-only for now**: songs you've told it aren't on Freegal.
 
-- Ranks songs by how often you actually played them (plays of 30 seconds or more), so the songs that matter most come first.
-- Checks your music folder and marks what you already own.
-- Looks every song up on the iTunes Store, and for each album works out whether buying the whole album or just the songs you want is cheaper.
-- With `--musicbrainz`, checks songs not on iTunes for other store links (often Bandcamp) and for CD or vinyl releases.
-- Writes `shopping-list.md` (links and prices, grouped by what to do) and `sources.csv` to the folder you chose.
+Options:
 
-Useful options: `--limit 300` checks only your top 300 songs, `--min-plays 5` skips songs you rarely play, `--country GB` uses a different iTunes Store.
+- `--freegal-per-week 3` if your library allows a different number.
+- `--freegal-cards 2` if you hold two cards with Freegal.
+- `--not-on-freegal missing.txt` is a file of `Artist - Title` lines you searched for and couldn't find. Those move to ear-only and the queue moves up.
+- `--musicbrainz` also looks for free download links listed on MusicBrainz. Slower, about 4 seconds a song on the first run, instant on reruns.
 
-**Timing.** Apple allows about 20 lookups a minute, so the first run takes a few seconds per album. A library of a few thousand songs can take an hour or two. Stop it any time. The next run picks up where it left off, and reruns are instant.
+Without `--musicbrainz` the tool makes no network calls at all. It only prints summary counts and writes the full plan to files on your computer. That's on purpose: Spotify's User Guidelines restrict feeding Spotify data into an AI (SPEC OI-1), so run it yourself rather than through Claude.
 
-**What it sends.** Artist, title and album text go to Apple and, with `--musicbrainz`, to MusicBrainz, along with your IP address. Nothing else leaves your computer. It only ever prints summary counts. The full list stays in the files it writes. That's on purpose: Spotify's User Guidelines restrict feeding Spotify data into an AI (SPEC OI-1), so it's best to run this yourself rather than through Claude.
+### 4. Each week
 
-It never buys or downloads anything.
+1. Open `free-plan.md` and look at this week's songs.
+2. Search for each one on your library's Freegal site and download the ones it has.
+3. Try the Bandcamp link for anything Freegal doesn't have. If it's free or name-your-price, enter $0.
+4. Add anything you couldn't find anywhere to your `missing.txt`.
+5. Put the downloads in your music folder, run `headphones library add`, and rerun the tool. Downloaded songs drop off the queue and the next week's batch moves up.
 
-## 3. Free downloads through your library
+### 5. Free music for testing and first listens
 
-Many US public libraries offer **Freegal Music** with a library card: DRM-free MP3s you keep forever, usually around 5 songs a week (each library sets its own limit). That's up to about 260 free songs a year. Search Freegal for anything on your "Not found yet" list before paying. Ask your library whether it subscribes.
+Headphones' evaluation needs some tracks you've never heard and some with little written about them. Free, legal sources are ideal here, even though they're mostly not your usual artists:
 
-Bandcamp also has plenty of free and name-your-price releases.
+- **Bandcamp** free and name-your-price releases.
+- **Free Music Archive** and **Jamendo**, both Creative Commons.
+- **Internet Archive** netlabel collections, also Creative Commons.
 
-## 4. Buy the rest
+Any Creative Commons license works for personal analysis, because Headphones never shares the stems it makes. Tag these with the source label `free_download` or `cc_licensed`.
 
-- **iTunes Store**: the widest catalog for major-label music, which covers most of your anchor artists. In a test run it had Spoon, XTC, The Smiths, Teenage Fanclub, Ahmad Jamal, Trashcan Sinatras and Heavenly's 2026 album. Usually $1.29 a song.
-- **Bandcamp**: best for independent labels, and the artist keeps more of the money. Lossless included. Bandcamp Fridays waive the site's cut.
-- **Amazon**: MP3s, sometimes cheaper than iTunes.
-- **Qobuz**: lossless and hi-res downloads.
+### 6. Songs a free plan can't reach
 
-Prefer lossless or high-bitrate files (256 kbps AAC or MP3 and up) when the price is the same. Headphones records whether a file is lossy, and a few metrics (breath, pick sound, air between notes) read best without heavy compression.
+Some songs aren't free anywhere legally. Run `headphones station --external <spotify-uri>` while you listen on Spotify and tap as usual. Headphones keeps your chill, head-nod and hook marks as ear judgments. If a song later turns up free, take it off `missing.txt` and rerun.
 
-Drop new purchases in your music folder and run `headphones library add` again. Rerun the helper now and then to see your list shrink.
+Things that look free but aren't legal: recording from Spotify or YouTube, ripping CDs borrowed from a library or a friend, and download sites that don't have the rights. Headphones won't use those.
 
-## 5. Used CDs for what isn't sold as a download
+## Keeping it going
 
-Some music is only on CD: out-of-print records, catalogs tied up in rights disputes, anything a label never put online. In the test run, Michelle Shocked's "Anchorage" didn't turn up on the US iTunes Store, but MusicBrainz showed CD releases. The helper lists these with a Discogs link for used copies. eBay and local record shops work too.
-
-Ripping a CD you own is legal for personal use in some countries and a grey area in others (in the US it isn't spelled out in law, and the UK withdrew its private copying exception in 2015). Check where you live. Tag rips with the source label `cd_rip`.
-
-Vinyl rips work too, but surface noise can confuse a few metrics (gaps, air between notes, breath). Tag them `vinyl_rip` so the analyzers and the evaluation can tell.
-
-## 6. Songs you can't get
-
-Some songs can't be owned legally anywhere: streaming-only releases and exclusives, live sessions recorded for a platform, out-of-print records with no copies for sale, region-locked catalogs. No legal method closes that gap, and this guide won't pretend otherwise.
-
-Those songs can still take part. Run `headphones station --external <spotify-uri>` while you listen on Spotify, and tap your chills, head-nods and hooks. Headphones keeps those as ear judgments. It just can't measure the audio. If the song is ever sold, buy it and the measurements fill in.
-
-## Keeping it complete
-
-- **New songs.** When something new grabs you, add `Artist - Title` to your want list, or wait for your next Spotify data export, and rerun the helper.
+- **New songs**: add `Artist - Title` to your want list, or wait for your next Spotify export, and rerun.
 - **Each December**, after Wrapped, request a fresh export and rerun. Your profile already plans a yearly refresh then.
-- **Budget.** Free first (what you own, Freegal), then singles, then albums only where the helper says the album is cheaper.
+- If you ever change your mind about spending money, `--mode paid` prices everything on the iTunes Store and works out whether albums or singles are cheaper.

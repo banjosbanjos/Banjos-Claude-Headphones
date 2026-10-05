@@ -88,7 +88,7 @@ There are no other calls. In particular:
 - Analyzers run with `HF_HUB_OFFLINE=1` and empty model caches, so a library that tries to download a model fails (REQ-WGT-02). On Linux, child processes also have no network at all (REQ-RES-01). macOS and Windows do not provide that isolation.
 - Desktop notifications for queued ear forms are local (REQ-LS-20).
 
-The sourcing helper `tools/find_sources.py` is a separate script, not part of the Headphones runtime, and runs only when you start it. It sends artist, title and album text to the iTunes Search API (itunes.apple.com) and, with `--musicbrainz`, to musicbrainz.org, along with your IP address. It reads your Spotify export locally, uses only artist, title, album and play counts, prints only summary counts, and writes the full list to files you choose. See [sourcing-guide.md](sourcing-guide.md). [HEP-0001](heps/0001-sourcing.md) proposes folding it into Headphones.
+The sourcing helper `tools/find_sources.py` is a separate script, not part of the Headphones runtime, and runs only when you start it. In its default free mode it makes no network calls. With `--musicbrainz` it sends artist and title text to musicbrainz.org, and in paid mode (`--mode paid`) also to the iTunes Search API (itunes.apple.com), along with your IP address. It reads your Spotify export locally, uses only artist, title, album and play counts, prints only summary counts, and writes the full list to files you choose. See [sourcing-guide.md](sourcing-guide.md). [HEP-0001](heps/0001-sourcing.md) proposes folding it into Headphones.
 
 Outside Headphones but worth knowing: installing or upgrading the package with `uv` or `pip` contacts the package index, and Claude Code sends the conversation to the model provider.
 
