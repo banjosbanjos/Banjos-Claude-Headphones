@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/banjosbanjos/Banjos-Claude-Headphones/schemas/history-play.schema.json",
+  "$comment": "Schema version 0.2.0. SPEC REQ-SPOT-03 to REQ-SPOT-05. Only these fields survive import.",
+  "title": "Imported play",
+  "description": "One music play from the listener's own Spotify extended streaming history, after minimization.",
+  "type": "object",
+  "required": ["ts", "ms_played", "spotify_track_uri"],
+  "properties": {
+    "ts": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "ms_played": { "type": "integer", "minimum": 0 },
+    "spotify_track_uri": { "type": "string", "pattern": "^spotify:track:[0-9A-Za-z]{22}$" },
+    "reason_start": { "type": ["string", "null"], "maxLength": 32 },
+    "reason_end": { "type": ["string", "null"], "maxLength": 32 },
+    "skipped": { "type": ["boolean", "null"] },
+    "shuffle": { "type": ["boolean", "null"] }
+  },
+  "additionalProperties": false
+}

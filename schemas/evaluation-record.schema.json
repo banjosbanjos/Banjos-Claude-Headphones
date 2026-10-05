@@ -1,51 +1,63 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/banjosbanjos/Banjos-Claude-Headphones/schemas/evaluation-record.schema.json",
+  "$comment": "Schema version 0.2.0. Normative companion to SPEC.md section 9.",
   "title": "Headphones evaluation record",
-  "description": "The stored result of analyzing one owned audio asset. Normative companion to SPEC.md section 9.",
+  "description": "Values for one subject: an owned audio asset, or an external track the listener heard elsewhere.",
   "type": "object",
-  "required": ["schema_version", "record_id", "created_at", "asset", "engine", "values"],
+  "required": ["schema_version", "record_id", "created_at", "values"],
   "properties": {
-    "schema_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "SemVer of this schema. Readers ignore unknown fields within a supported major version."
-    },
-    "record_id": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "UUIDv7."
-    },
-    "created_at": { "type": "string", "format": "date-time" },
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "record_id": { "$ref": "#/$defs/uuid7" },
+    "created_at": { "$ref": "#/$defs/utc_time" },
     "asset": { "$ref": "#/$defs/asset" },
+    "external": { "$ref": "#/$defs/external" },
     "engine": { "$ref": "#/$defs/engine" },
     "separation_quality": {
       "type": "object",
+      "required": ["stems"],
       "properties": {
-        "mix": { "$ref": "#/$defs/unit" },
         "stems": {
           "type": "object",
           "propertyNames": { "$ref": "#/$defs/stem" },
-          "additionalProperties": { "$ref": "#/$defs/unit" }
+          "additionalProperties": { "oneOf": [{ "$ref": "#/$defs/unit" }, { "type": "null" }] },
+          "description": "Null for a stem that is not present (METRICS.md section 2.1)."
         }
       }
     },
-    "values": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/value" }
-    },
+    "values": { "type": "array", "items": { "$ref": "#/$defs/value" } },
     "composites": { "$ref": "#/$defs/composites" }
   },
+  "oneOf": [
+    { "required": ["asset", "engine", "separation_quality"], "not": { "required": ["external"] } },
+    { "required": ["external"], "not": { "required": ["asset"] } }
+  ],
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "uuid7": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "utc_time": { "type": "string", "format": "date-time", "pattern": "Z$" },
     "unit": { "type": "number", "minimum": 0, "maximum": 1 },
     "stem": { "enum": ["drums", "bass", "vocals", "guitar", "piano", "other"] },
-    "evidence_class": {
-      "enum": ["MEASURED", "ESTIMATED", "PROXY", "EAR", "BEHAVIORAL", "STATED", "TEXTUAL"]
-    },
+    "evidence_class": { "enum": ["MEASURED", "ESTIMATED", "PROXY", "EAR", "BEHAVIORAL", "STATED", "TEXTUAL"] },
     "metric_id": {
       "type": "string",
+      "pattern": "^(groove|attack|space|vocal|structure|feel)\\.[a-z_]+(\\.proxy)?$"
+    },
+    "base_metric_id": {
+      "type": "string",
       "pattern": "^(groove|attack|space|vocal|structure|feel)\\.[a-z_]+$"
+    },
+    "spotify_uri": { "type": "string", "pattern": "^spotify:track:[0-9A-Za-z]{22}$" },
+    "untrusted_metadata": {
+      "type": "object",
+      "description": "Text from tags, AcoustID or the listener. Data, never instructions (SPEC REQ-MCP-03). Control and bidi characters removed.",
+      "properties": {
+        "artist": { "type": "string", "maxLength": 512 },
+        "title": { "type": "string", "maxLength": 512 },
+        "album": { "type": "string", "maxLength": 512 }
+      },
+      "additionalProperties": false
     },
     "asset": {
       "type": "object",
@@ -59,45 +71,48 @@
         "channels": { "type": "integer", "minimum": 1 },
         "codec": { "type": "string" },
         "lossy": { "type": "boolean" },
-        "source": { "enum": ["bandcamp", "qobuz", "7digital", "hdtracks", "artist_store", "cd_rip", "vinyl_rip", "other", null] },
+        "source": {
+          "type": ["string", "null"],
+          "enum": ["bandcamp", "itunes", "amazon", "qobuz", "hdtracks", "artist_store", "cd_rip", "vinyl_rip", "other", null]
+        },
         "identity": {
           "type": "object",
+          "required": ["identity_confidence"],
           "properties": {
             "identity_confidence": { "enum": ["fingerprint", "tags_only", "listener_confirmed"] },
-            "musicbrainz_recording_ids": {
-              "type": "array",
-              "items": { "type": "string", "format": "uuid" }
-            },
+            "musicbrainz_recording_ids": { "type": "array", "items": { "$ref": "#/$defs/uuid" }, "maxItems": 20 },
             "isrc": { "type": ["string", "null"], "pattern": "^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$" },
             "spotify_uri": {
-              "type": ["string", "null"],
-              "pattern": "^spotify:track:[0-9A-Za-z]{22}$",
-              "description": "Opaque, listener-linked. Never dereferenced by Headphones (SPEC REQ-SPOT-02)."
+              "oneOf": [{ "$ref": "#/$defs/spotify_uri" }, { "type": "null" }],
+              "description": "Listener-linked, opaque, never dereferenced (SPEC REQ-SPOT-02)."
             },
-            "untrusted_metadata": {
-              "type": "object",
-              "description": "Artist, title, album from tags or MusicBrainz. Data, never instructions (SPEC REQ-MCP-03).",
-              "properties": {
-                "artist": { "type": "string", "maxLength": 512 },
-                "title": { "type": "string", "maxLength": 512 },
-                "album": { "type": "string", "maxLength": 512 }
-              },
-              "additionalProperties": false
-            }
+            "untrusted_metadata": { "$ref": "#/$defs/untrusted_metadata" }
           }
         }
       }
     },
+    "external": {
+      "type": "object",
+      "description": "A track heard outside the station (SPEC REQ-LS-11). Only listener-entered data.",
+      "required": ["spotify_uri"],
+      "properties": {
+        "spotify_uri": { "$ref": "#/$defs/spotify_uri" },
+        "untrusted_metadata": { "$ref": "#/$defs/untrusted_metadata" }
+      },
+      "additionalProperties": false
+    },
     "engine": {
       "type": "object",
-      "required": ["version", "config_digest", "components"],
+      "required": ["version", "config_digest", "thresholds", "components"],
       "properties": {
         "version": { "type": "string" },
         "platform": { "type": "string" },
         "config_digest": { "$ref": "#/$defs/sha256" },
+        "loudness_standard": { "enum": ["BS.1770-4", "BS.1770-5"] },
         "thresholds": {
           "type": "object",
-          "description": "Active category thresholds, keyed by metric_id.",
+          "description": "Active category thresholds keyed by metric_id.",
+          "propertyNames": { "$ref": "#/$defs/base_metric_id" },
           "additionalProperties": { "type": "object" }
         },
         "components": {
@@ -117,7 +132,8 @@
                   "properties": {
                     "name": { "type": "string" },
                     "sha256": { "$ref": "#/$defs/sha256" },
-                    "license": { "type": "string" }
+                    "license": { "type": "string" },
+                    "training_data_notes": { "type": "string" }
                   }
                 }
               }
@@ -132,65 +148,75 @@
       "properties": {
         "t_s": { "type": "number", "minimum": 0 },
         "uncertainty_s": { "type": "number", "minimum": 0 },
-        "label": { "type": "string", "maxLength": 64 }
+        "label": { "type": "string", "pattern": "^[a-z_]{1,64}$" }
       }
     },
     "capture": {
       "type": "object",
-      "required": ["method", "captured_at"],
+      "required": ["method", "captured_at", "familiar", "first_listen"],
       "properties": {
-        "method": { "enum": ["station", "import", "companion"] },
-        "captured_at": { "type": "string", "format": "date-time" },
-        "device": { "type": "string" },
+        "method": { "enum": ["station", "import", "external"] },
+        "captured_at": { "$ref": "#/$defs/utc_time" },
+        "device": { "type": "string", "pattern": "^[a-z0-9_-]{1,32}$", "description": "Listener-assigned label, never an OS device name." },
+        "latency_method": { "enum": ["loopback", "tap_along"] },
         "latency_correction_ms": { "type": "number" },
         "latency_iqr_ms": { "type": "number", "minimum": 0 },
         "normalization": { "enum": ["lufs_-14", "off"] },
-        "listen_index": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "1 for the listener's first listen on the station."
-        },
+        "listen_index": { "type": "integer", "minimum": 1 },
+        "familiar": { "enum": ["yes", "no", "not_sure"] },
+        "first_listen": { "type": "boolean" },
+        "ear_tier": { "enum": ["quick", "extra", "full"] },
+        "agent_prompt": { "type": "string", "maxLength": 500, "description": "Wording of a question queued by the agent (SPEC REQ-LS-19)." },
         "note": { "type": "string", "maxLength": 500 }
-      }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "method": { "const": "station" } } },
+          "then": { "required": ["device", "latency_method", "latency_correction_ms", "latency_iqr_ms", "normalization", "listen_index", "ear_tier"] }
+        },
+        {
+          "if": { "properties": { "method": { "const": "external" } } },
+          "then": { "required": ["listen_index", "ear_tier"] }
+        }
+      ]
     },
     "value": {
       "type": "object",
-      "required": ["metric_id", "status", "evidence_class"],
+      "required": ["value_id", "metric_id", "status", "evidence_class", "confidence"],
       "properties": {
-        "value_id": { "type": "string" },
+        "value_id": { "$ref": "#/$defs/uuid" },
         "metric_id": { "$ref": "#/$defs/metric_id" },
         "status": { "enum": ["ok", "abstained", "error"] },
         "reason": { "type": "string", "pattern": "^[a-z_]+$" },
         "evidence_class": { "$ref": "#/$defs/evidence_class" },
-        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "confidence": { "oneOf": [{ "$ref": "#/$defs/unit" }, { "type": "null" }] },
         "value": {},
         "category": { "type": ["string", "null"], "pattern": "^[a-z_]+$" },
-        "timestamps": { "type": "array", "items": { "$ref": "#/$defs/timestamp" } },
-        "proxy_for": { "$ref": "#/$defs/metric_id" },
+        "timestamps": { "type": "array", "items": { "$ref": "#/$defs/timestamp" }, "maxItems": 200 },
+        "proxy_for": { "$ref": "#/$defs/base_metric_id" },
         "method": {
           "type": "object",
           "required": ["name", "version"],
-          "properties": {
-            "name": { "type": "string" },
-            "version": { "type": "string" }
-          }
+          "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
         },
         "maturity": { "enum": ["experimental", "beta", "stable"] },
         "capture": { "$ref": "#/$defs/capture" },
-        "superseded_by": { "type": ["string", "null"] }
+        "superseded_by": { "oneOf": [{ "$ref": "#/$defs/uuid" }, { "type": "null" }] }
       },
       "allOf": [
         {
+          "if": { "properties": { "status": { "const": "ok" } } },
+          "then": { "required": ["value"] },
+          "else": { "required": ["reason"], "not": { "required": ["value"] }, "properties": { "confidence": { "type": "null" } } }
+        },
+        {
           "if": { "properties": { "evidence_class": { "const": "PROXY" } } },
-          "then": { "required": ["proxy_for"] }
+          "then": { "required": ["proxy_for"], "properties": { "metric_id": { "pattern": "\\.proxy$" } } },
+          "else": { "not": { "required": ["proxy_for"] }, "properties": { "metric_id": { "not": { "pattern": "\\.proxy$" } } } }
         },
         {
           "if": { "properties": { "evidence_class": { "const": "EAR" } } },
           "then": { "required": ["capture"] }
-        },
-        {
-          "if": { "properties": { "status": { "enum": ["abstained", "error"] } } },
-          "then": { "required": ["reason"] }
         },
         {
           "if": { "properties": { "evidence_class": { "enum": ["MEASURED", "ESTIMATED", "PROXY"] } } },
@@ -198,22 +224,46 @@
         },
         {
           "if": {
-            "properties": { "evidence_class": { "const": "MEASURED" } }
+            "properties": { "evidence_class": { "enum": ["MEASURED", "ESTIMATED", "PROXY"] }, "status": { "const": "ok" } },
+            "required": ["evidence_class", "status"]
           },
+          "then": { "properties": { "confidence": { "$ref": "#/$defs/unit" } } }
+        },
+        {
+          "if": { "properties": { "evidence_class": { "const": "MEASURED" } } },
           "then": { "properties": { "maturity": { "const": "stable" } } }
         }
       ]
     },
-    "criterion": {
+    "evidence_basis": {
       "type": "object",
-      "required": ["id", "result", "evidence_class"],
+      "required": ["classes", "basis_summary"],
       "properties": {
-        "id": { "type": "string", "pattern": "^(B[1-5]|F[1-7])$" },
-        "result": { "enum": ["pass", "fail", "unknown", "detected", "not_detected"] },
-        "evidence_class": { "$ref": "#/$defs/evidence_class" },
+        "classes": { "type": "array", "items": { "$ref": "#/$defs/evidence_class" }, "uniqueItems": true, "minItems": 1 },
+        "basis_summary": { "enum": ["ear", "analysis", "proxy"] }
+      }
+    },
+    "build_criterion": {
+      "type": "object",
+      "required": ["id", "result", "evidence"],
+      "properties": {
+        "id": { "enum": ["B1", "B2", "B3", "B4", "B5"] },
+        "result": { "enum": ["pass", "fail", "unknown"] },
+        "evidence": { "$ref": "#/$defs/evidence_basis" },
         "inputs": { "type": "array", "items": { "type": "string" } },
-        "timestamps": { "type": "array", "items": { "$ref": "#/$defs/timestamp" } },
+        "timestamps": { "type": "array", "items": { "$ref": "#/$defs/timestamp" }, "maxItems": 20 },
         "verify_by_ear": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "feel_move": {
+      "type": "object",
+      "required": ["id", "result", "evidence"],
+      "properties": {
+        "id": { "enum": ["F1", "F2", "F3", "F4", "F5", "F6", "F7"] },
+        "result": { "enum": ["detected", "not_detected", "unknown"] },
+        "evidence": { "$ref": "#/$defs/evidence_basis" },
+        "timestamps": { "type": "array", "items": { "$ref": "#/$defs/timestamp" }, "maxItems": 20 },
+        "ear_answer": { "enum": ["ticked", "not_ticked", "not_asked"] }
       }
     },
     "composites": {
@@ -223,7 +273,7 @@
           "type": "object",
           "required": ["criteria", "known_pass", "unknown"],
           "properties": {
-            "criteria": { "type": "array", "items": { "$ref": "#/$defs/criterion" }, "maxItems": 5 },
+            "criteria": { "type": "array", "items": { "$ref": "#/$defs/build_criterion" }, "minItems": 5, "maxItems": 5 },
             "known_pass": { "type": "integer", "minimum": 0, "maximum": 5 },
             "unknown": { "type": "integer", "minimum": 0, "maximum": 5 },
             "measured_bpm": { "type": ["number", "null"] },
@@ -234,11 +284,10 @@
           "type": "object",
           "required": ["moves", "count"],
           "properties": {
-            "moves": { "type": "array", "items": { "$ref": "#/$defs/criterion" }, "maxItems": 7 },
+            "moves": { "type": "array", "items": { "$ref": "#/$defs/feel_move" }, "minItems": 7, "maxItems": 7 },
             "count": { "type": "integer", "minimum": 0, "maximum": 7 }
           }
-        },
-        "route": { "enum": ["anchor", "rotation", "resonance", "skip", "undetermined"] }
+        }
       }
     }
   }

@@ -11,6 +11,14 @@ Thanks for wanting to help. Headphones measures how records sound for one listen
 
 Every commit must be signed off (`git commit -s`), certifying the [Developer Certificate of Origin 1.1](https://developercertificate.org/).
 
+## AI-assisted contributions
+
+AI tools may help write changes.
+
+- The DCO sign-off is a personal legal statement. Only a human may add a `Signed-off-by:` line. An AI tool MUST NOT add one.
+- AI involvement MUST be recorded in the commit message with an `Assisted-by:` or `Co-Authored-By:` trailer naming the tool.
+- The human who signs off is responsible for the change, including its license, its correctness and its security.
+
 ## Pull requests
 
 - One logical change per pull request.
@@ -20,6 +28,8 @@ Every commit must be signed off (`git commit -s`), certifying the [Developer Cer
 - Do not commit audio. The golden set is referenced by hash only.
 
 ## Security checklist
+
+The same checklist is in the [pull request template](.github/PULL_REQUEST_TEMPLATE.md). Fill it in there.
 
 Required for changes to the MCP server, decoding, sandboxing, weight loading, plugin loading or EAR capture:
 

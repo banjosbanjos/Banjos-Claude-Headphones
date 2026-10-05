@@ -1,7 +1,7 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "record_id": "0192a6c4-7b1e-7c3a-9f10-2b4d6e8a0c12",
-  "created_at": "2026-10-05T18:20:00Z",
+  "created_at": "2026-10-05T18:40:00Z",
   "asset": {
     "asset_id": "3f1c9a0d5b7e2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a0c1e3b5d7f9a",
     "pcm_sha256": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b",
@@ -14,23 +14,32 @@
     "source": "bandcamp",
     "identity": {
       "identity_confidence": "fingerprint",
-      "musicbrainz_recording_ids": ["5b11f4ce-a62d-471e-81fc-a69a8278c7da"],
+      "musicbrainz_recording_ids": [
+        "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
+      ],
       "isrc": null,
       "spotify_uri": null,
       "untrusted_metadata": {
         "artist": "Example Artist",
-        "title": "Illustrative Track (values are made up for this example)",
+        "title": "Illustrative Track (all values are made up)",
         "album": "Example Album"
       }
     }
   },
   "engine": {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "platform": "linux-x86_64-cpu",
     "config_digest": "c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00",
+    "loudness_standard": "BS.1770-5",
     "thresholds": {
-      "groove.pocket": { "ahead_ms": -8, "behind_ms": 8 },
-      "space.width": { "narrow_db": -15, "wide_db": -7 }
+      "groove.pocket": {
+        "ahead_ms": -8,
+        "behind_ms": 8
+      },
+      "space.width": {
+        "narrow_db": -15,
+        "wide_db": -7
+      }
     },
     "components": [
       {
@@ -39,100 +48,361 @@
         "kind": "stage",
         "weights": [
           {
-            "name": "htdemucs_6s",
+            "name": "htdemucs_6s.safetensors",
             "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
-            "license": "MIT"
+            "license": "MIT",
+            "training_data_notes": "MUSDB18-HQ (non-commercial research license) plus internal songs"
           }
         ]
       },
-      { "name": "groove.pocket", "version": "1.0.0", "kind": "analyzer" },
-      { "name": "space.width", "version": "1.0.0", "kind": "analyzer" },
-      { "name": "structure.ending", "version": "1.0.0", "kind": "analyzer" }
+      {
+        "name": "groove.pocket",
+        "version": "1.0.0",
+        "kind": "analyzer"
+      },
+      {
+        "name": "space.width",
+        "version": "1.0.0",
+        "kind": "analyzer"
+      },
+      {
+        "name": "structure.ending",
+        "version": "1.0.0",
+        "kind": "analyzer"
+      },
+      {
+        "name": "groove.head_nod.proxy",
+        "version": "0.2.0",
+        "kind": "analyzer"
+      }
     ]
   },
   "separation_quality": {
-    "mix": 0.93,
-    "stems": { "drums": 0.86, "bass": 0.81, "vocals": 0.88, "guitar": 0.64, "piano": 0.0, "other": 0.7 }
+    "stems": {
+      "drums": 0.81,
+      "bass": 0.74,
+      "vocals": 0.83,
+      "guitar": 0.58,
+      "piano": null,
+      "other": 0.62
+    }
   },
   "values": [
     {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000001",
       "metric_id": "groove.pocket",
       "status": "ok",
       "evidence_class": "ESTIMATED",
       "confidence": 0.71,
       "value": {
-        "snare_backbeat_ms": { "median": 14.2, "iqr": 9.8, "ci95": [9.1, 19.6] },
-        "kick_ms": { "median": 2.1, "iqr": 6.4, "ci95": [-1.0, 5.3] },
-        "bass_ms": { "median": 4.0, "iqr": 11.2, "ci95": [-0.8, 8.9] },
+        "pocket_source": "snare_backbeat",
+        "vs_drummer": {
+          "median_ms": 9.4,
+          "iqr_ms": 8.1,
+          "ci95": [
+            5.2,
+            13.6
+          ]
+        },
+        "vs_band": {
+          "median_ms": 14.2,
+          "iqr_ms": 9.8,
+          "ci95": [
+            9.1,
+            19.6
+          ]
+        },
+        "kick_ms": {
+          "median_ms": 2.1,
+          "iqr_ms": 6.4
+        },
+        "hihat_ms": {
+          "median_ms": -1.3,
+          "iqr_ms": 5.9
+        },
+        "bass_ms": {
+          "median_ms": 4.0,
+          "iqr_ms": 11.2
+        },
+        "swing_ratio": 1.05,
+        "grid": "straight_16",
         "n_bars": 96
       },
       "category": "behind",
-      "method": { "name": "groove.pocket", "version": "1.0.0" },
+      "method": {
+        "name": "groove.pocket",
+        "version": "1.0.0"
+      },
       "maturity": "beta"
     },
     {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000002",
       "metric_id": "space.width",
       "status": "ok",
-      "evidence_class": "MEASURED",
+      "evidence_class": "ESTIMATED",
       "confidence": 1.0,
-      "value": { "side_to_mid_db": -11.3, "correlation": 0.62 },
+      "value": {
+        "side_to_mid_db": -11.3,
+        "coherence": 0.86,
+        "per_band": [
+          {
+            "band_hz": 125,
+            "side_to_mid_db": -19.0
+          },
+          {
+            "band_hz": 1000,
+            "side_to_mid_db": -10.8
+          },
+          {
+            "band_hz": 8000,
+            "side_to_mid_db": -9.6
+          }
+        ]
+      },
       "category": "medium",
-      "method": { "name": "space.width", "version": "1.0.0" },
-      "maturity": "stable"
+      "method": {
+        "name": "space.width",
+        "version": "1.0.0"
+      },
+      "maturity": "beta"
     },
     {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000003",
       "metric_id": "structure.ending",
       "status": "ok",
-      "evidence_class": "MEASURED",
+      "evidence_class": "ESTIMATED",
       "confidence": 0.97,
-      "value": { "fade_duration_s": 0, "final_drop_db_per_s": 41.0, "tail_ring_s": 1.6, "trailing_silence_s": 0.8 },
-      "category": "cold_end",
-      "timestamps": [{ "t_s": 218.9, "uncertainty_s": 0.05, "label": "final_hit" }],
-      "method": { "name": "structure.ending", "version": "1.0.0" },
-      "maturity": "stable"
+      "value": {
+        "fade_duration_s": 0,
+        "drop_db_in_20ms": 4.0,
+        "drop_db_in_300ms": 12.5,
+        "tail_ring_s": 1.6,
+        "trailing_silence_s": 0.8
+      },
+      "category": "ring_out",
+      "timestamps": [
+        {
+          "t_s": 218.9,
+          "uncertainty_s": 0.05,
+          "label": "final_hit"
+        }
+      ],
+      "method": {
+        "name": "structure.ending",
+        "version": "1.0.0"
+      },
+      "maturity": "beta"
     },
     {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000004",
       "metric_id": "groove.ghost_notes",
       "status": "abstained",
       "reason": "no_transcription",
       "evidence_class": "ESTIMATED",
       "confidence": null,
-      "method": { "name": "groove.ghost_notes", "version": "0.1.0" },
+      "method": {
+        "name": "groove.ghost_notes",
+        "version": "0.1.0"
+      },
       "maturity": "experimental"
     },
     {
-      "metric_id": "groove.head_nod",
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000005",
+      "metric_id": "groove.head_nod.proxy",
+      "proxy_for": "groove.head_nod",
       "status": "ok",
       "evidence_class": "PROXY",
-      "proxy_for": "groove.head_nod",
       "confidence": 0.8,
-      "value": { "time_to_stable_pulse_s": 3.7, "pulse_clarity": 0.74 },
-      "method": { "name": "groove.head_nod.proxy", "version": "0.2.0" },
+      "value": {
+        "time_to_stable_pulse_s": 3.7,
+        "pulse_clarity": 0.74
+      },
+      "method": {
+        "name": "groove.head_nod.proxy",
+        "version": "0.2.0"
+      },
       "maturity": "beta"
     },
     {
-      "metric_id": "feel.chill_timestamp",
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000006",
+      "metric_id": "groove.head_nod",
       "status": "ok",
       "evidence_class": "EAR",
       "confidence": null,
-      "value": { "taps": 1 },
-      "timestamps": [{ "t_s": 134.62, "uncertainty_s": 0.06, "label": "chill" }],
+      "value": {
+        "moved": "yes",
+        "at_s": 5.9
+      },
+      "timestamps": [
+        {
+          "t_s": 5.9,
+          "uncertainty_s": 0.06,
+          "label": "head_moved"
+        }
+      ],
       "capture": {
         "method": "station",
         "captured_at": "2026-10-05T18:31:12Z",
         "device": "wired-headphones-1",
+        "latency_method": "loopback",
         "latency_correction_ms": 38,
-        "latency_iqr_ms": 21,
+        "latency_iqr_ms": 6,
         "normalization": "lufs_-14",
-        "listen_index": 1
+        "listen_index": 1,
+        "familiar": "no",
+        "first_listen": true,
+        "ear_tier": "quick"
+      }
+    },
+    {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000007",
+      "metric_id": "structure.hook_stickiness",
+      "status": "ok",
+      "evidence_class": "EAR",
+      "confidence": null,
+      "value": {
+        "hummable_after_one": "yes",
+        "hook_at_s": 3.2
+      },
+      "timestamps": [
+        {
+          "t_s": 3.2,
+          "uncertainty_s": 0.06,
+          "label": "hook"
+        }
+      ],
+      "capture": {
+        "method": "station",
+        "captured_at": "2026-10-05T18:31:12Z",
+        "device": "wired-headphones-1",
+        "latency_method": "loopback",
+        "latency_correction_ms": 38,
+        "latency_iqr_ms": 6,
+        "normalization": "lufs_-14",
+        "listen_index": 1,
+        "familiar": "no",
+        "first_listen": true,
+        "ear_tier": "quick"
+      }
+    },
+    {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000008",
+      "metric_id": "feel.chill_timestamp",
+      "status": "ok",
+      "evidence_class": "EAR",
+      "confidence": null,
+      "value": {
+        "taps": 1
+      },
+      "timestamps": [
+        {
+          "t_s": 134.62,
+          "uncertainty_s": 0.06,
+          "label": "chill"
+        }
+      ],
+      "capture": {
+        "method": "station",
+        "captured_at": "2026-10-05T18:31:12Z",
+        "device": "wired-headphones-1",
+        "latency_method": "loopback",
+        "latency_correction_ms": 38,
+        "latency_iqr_ms": 6,
+        "normalization": "lufs_-14",
+        "listen_index": 1,
+        "familiar": "no",
+        "first_listen": true,
+        "ear_tier": "quick"
       }
     }
   ],
   "composites": {
     "build": {
       "criteria": [
-        { "id": "B1", "result": "unknown", "evidence_class": "ESTIMATED", "inputs": ["space.room_sound", "attack.hand_played_feel"], "verify_by_ear": ["drum dryness"] },
-        { "id": "B5", "result": "pass", "evidence_class": "EAR", "inputs": ["duration", "structure.hook_stickiness"] }
+        {
+          "id": "B1",
+          "result": "unknown",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "inputs": [
+            "space.room_sound",
+            "attack.hand_played_feel"
+          ],
+          "verify_by_ear": [
+            "drums_dry_and_up_front"
+          ]
+        },
+        {
+          "id": "B2",
+          "result": "unknown",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "inputs": [
+            "attack.decay_length"
+          ],
+          "verify_by_ear": [
+            "short_decay"
+          ]
+        },
+        {
+          "id": "B3",
+          "result": "unknown",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "inputs": [
+            "space.clarity_under_load"
+          ]
+        },
+        {
+          "id": "B4",
+          "result": "unknown",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "inputs": [
+            "space.stereo_placement",
+            "vocal.proximity"
+          ],
+          "verify_by_ear": [
+            "diction"
+          ]
+        },
+        {
+          "id": "B5",
+          "result": "pass",
+          "evidence": {
+            "classes": [
+              "MEASURED",
+              "EAR"
+            ],
+            "basis_summary": "ear"
+          },
+          "inputs": [
+            "asset.duration_s",
+            "structure.hook_stickiness"
+          ],
+          "timestamps": [
+            {
+              "t_s": 3.2,
+              "label": "hook"
+            }
+          ]
+        }
       ],
       "known_pass": 1,
       "unknown": 4,
@@ -141,10 +411,97 @@
     },
     "feel": {
       "moves": [
-        { "id": "F6", "result": "detected", "evidence_class": "ESTIMATED", "timestamps": [{ "t_s": 133.9, "label": "first organ entry" }] }
+        {
+          "id": "F1",
+          "result": "not_detected",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "ear_answer": "not_ticked"
+        },
+        {
+          "id": "F2",
+          "result": "detected",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "timestamps": [
+            {
+              "t_s": 121.0,
+              "label": "drop_out"
+            }
+          ],
+          "ear_answer": "ticked"
+        },
+        {
+          "id": "F3",
+          "result": "unknown",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "ear_answer": "not_ticked"
+        },
+        {
+          "id": "F4",
+          "result": "not_detected",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "ear_answer": "not_ticked"
+        },
+        {
+          "id": "F5",
+          "result": "not_detected",
+          "evidence": {
+            "classes": [
+              "PROXY"
+            ],
+            "basis_summary": "proxy"
+          },
+          "ear_answer": "not_ticked"
+        },
+        {
+          "id": "F6",
+          "result": "detected",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "timestamps": [
+            {
+              "t_s": 133.9,
+              "label": "organ_entry"
+            }
+          ],
+          "ear_answer": "ticked"
+        },
+        {
+          "id": "F7",
+          "result": "not_detected",
+          "evidence": {
+            "classes": [
+              "ESTIMATED"
+            ],
+            "basis_summary": "analysis"
+          },
+          "ear_answer": "not_ticked"
+        }
       ],
-      "count": 1
-    },
-    "route": "undetermined"
+      "count": 2
+    }
   }
 }

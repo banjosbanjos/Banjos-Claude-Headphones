@@ -1,44 +1,66 @@
 # Roadmap
 
-Milestones adapt the CNCF maturity levels as internal goals. The labels describe readiness, not CNCF status.
+Each milestone ends with something the listener can use. Project-hygiene items (signing, SBOM, fuzzing) are tracked separately so they never hold back a useful release.
 
-## M0 Specification (this release, "Sandbox" readiness)
+## M0 Specification (this release)
 
-- [x] SPEC, METRICS, schema, evaluation plan, security self-assessment, governance.
-- [x] Ten adversarial reviews (docs/reviews).
-- Exit: listener of record approves the spec.
+- [x] SPEC, METRICS, schemas with examples and checker, evaluation plan, security self-assessment, privacy, ADRs, governance.
+- [x] Ten adversarial reviews, findings fixed ([docs/reviews/adversarial-reviews.md](docs/reviews/adversarial-reviews.md)).
+- [ ] Listener confirms the two open definitions (SPEC OI-6): cold end versus hard stop, and chopped hi-hats.
+- [ ] Listener approves the spec.
 
-## M1 Foundations
+## M1 First useful version
 
-- Ingest, identity, content-addressed store, run manifests, `doctor`.
-- Separation, beat grid, loudness, stereo analysis, stem activity.
-- Signal-only metrics: `space.width`, `structure.ending`, `attack.air`, `feel.space_before_drop`, `feel.dynamic_breathing`.
-- Listening station with latency calibration and tap capture. Ear forms for all metrics.
-- MCP server read tools and the skill.
-- Synthetic conformance corpus generator.
-- Drum transcription model selection (SPEC OI-3).
-- Exit: conformance suite green for M1 metrics. Tap accuracy (REQ-LS-02) demonstrated.
+Exit: the listener can listen, mark moments, and ask Claude about owned tracks with real measurements.
+
+- Ingest, identity (opt-in lookup), evidence store, run manifests, `doctor`.
+- Station with latency calibration, taps, Quick Ear form, external playback mode.
+- Separation, beat grid, swing and meter, loudness, stereo, stem activity.
+- Signal metrics: `space.width`, `structure.ending`, `attack.air`, `feel.space_before_drop`, `feel.dynamic_breathing`.
+- **Partial BUILD and FEEL report**: duration and measured tempo against the stated range (B5, B1), vocal pan (part of B4), Quick Ear answers for B1, B3, B4 and B5, and FEEL F1, F2, F6 and F7 from the stem timeline. Everything else shows as `unknown`.
+- **Control-group study, ear part** (evaluation plan §7.3), which needs no purchases.
+- MCP server read tools, the plugin and skill, CLI JSON schemas (SPEC REQ-CLI-01).
+- Synthetic corpus generator. Drum transcription model chosen (SPEC OI-3).
+- Tap accuracy shown to meet SPEC REQ-LS-02 by the evaluation plan §8 procedure.
 
 ## M2 Groove and texture
 
-- Reference pulse and microtiming (METRICS §2.3), with the separation-bias study for SPEC OI-4.
+- Reference pulse and microtiming, with the separation-bias study (SPEC OI-4).
 - All groove and attack metrics, `space.room_sound`, `space.stereo_placement`, `space.clarity_under_load`, `space.compression_pumping`.
 - Renders: microtiming, stem_activity, stereo_field, decay.
-- Exit: Study A on the calibration split. At least half of the M2 metrics reach `beta`.
+- Exit: synthetic targets met and ear capture for Study A complete. First held-out look happens here (evaluation plan §4), never on the calibration split.
 
-## M3 Vocal and structure ("Incubating" readiness)
+## M3 Vocal and structure
 
-- Vocal metrics, structure segmentation and structure metrics, proxies for head-nod, hook, tension, payoff, kept mistakes, chill.
-- Composites (BUILD, FEEL, routing).
-- Exit: Study A held-out results published. Signed releases with SBOM and provenance. Second maintainer or reviewer recruited, or the gap documented.
+- Vocal metrics with voice gating, structure metrics, all proxies.
+- Full BUILD and FEEL, artist-level routing.
+- Exit: Study A held-out report published.
 
 ## M4 Evidence of value
 
-- Study B (harness lift), Study C (FEEL and chills, including the control group), Study D if history is enabled.
+- Study B (harness lift), Study C (chills, including detectors on the control group), Study D if history is enabled.
 - Exit: reports published, positive or negative.
 
-## 1.0 ("Graduated" readiness)
+## 1.0
 
 - Stable MCP tool surface and schema 1.0.
-- Every metric at its achievable maturity, with remaining gaps documented.
-- Fuzzed ingest path. OpenSSF Scorecard published. Security self-assessment refreshed.
+- Every metric at its achievable maturity, gaps documented.
+
+## Project hygiene track (alongside, never blocking)
+
+- Signed releases with SLSA provenance and SBOM from the first tagged release.
+- OpenSSF Best Practices badge (passing) and Scorecard.
+- Ingest fuzzing before 1.0.
+- Security self-assessment refreshed at 1.0.
+
+## Listener actions (need repository owner rights)
+
+- Turn on GitHub private vulnerability reporting (currently off).
+- Turn on GitHub Discussions (currently off) as the public channel.
+- Add a security contact email to SECURITY.md and a conduct contact to CODE_OF_CONDUCT.md before outside contributions.
+- Merge to `main` so GitHub can see LICENSE, SECURITY and CODE_OF_CONDUCT.
+- Register an AcoustID application key for the project.
+
+## If this were ever proposed to the CNCF
+
+Headphones does not use CNCF maturity labels. A Sandbox application would also need a reusable project with working code, an organization column in MAINTAINERS, and acknowledgment of the CNCF IP and trademark policies. Incubation would add independent adopters with interviews, the OpenSSF Best Practices passing badge, a public channel and contributor ladder in active use, and maintainer affiliations. Graduation would add maintainers from at least two organizations, a third-party security audit and a record of governance in practice. Sources: https://github.com/cncf/toc/tree/main/process.

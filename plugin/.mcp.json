@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "headphones": {
+      "command": "headphones",
+      "args": ["mcp"]
+    }
+  }
+}

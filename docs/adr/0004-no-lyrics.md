@@ -9,9 +9,9 @@ The listener's music profile says to judge sound, not subject, and never analyze
 
 ## Decision
 
-Headphones does not transcribe, store, score or display lyrics. No speech-to-text model is included. Vocal metrics measure acoustic properties only: placement, breath, doubling, harmony count, proximity and timing. BUILD criterion 4 asks for clear enunciation, which cannot be judged without hearing words, so that part is always left to the listener's ear.
+Headphones does not transcribe, store, score or display lyrics. No speech-to-text model is included. Vocal metrics measure acoustic properties only: placement, breath, doubling, harmony count, proximity and timing. BUILD criterion 4 asks for clear enunciation, which cannot be judged without hearing words, so that part is always left to the listener's ear (Quick Ear Q7).
 
 ## Consequences
 
 - Diction is never computed.
-- The event tagger's `speech` class is used only to flag spoken passages as candidate kept moments, never to recognize words.
+- The event tagger's `singing` and `speech` classes are used only to gate vocal frames and to flag spoken passages as candidate kept moments, never to recognize words.

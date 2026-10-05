@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/banjosbanjos/Banjos-Claude-Headphones/schemas/calibration-event.schema.json",
+  "$comment": "Schema version 0.2.0. SPEC REQ-EVID-09 and REQ-VAL-07.",
+  "title": "Calibration event",
+  "description": "An analyzer value and an ear value for the same metric and asset that differ beyond the agreement band.",
+  "type": "object",
+  "required": ["schema_version", "event_id", "asset_id", "metric_id", "analyzer_value_id", "ear_value_id", "analyzer_category", "ear_answer", "created_at", "sealed"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "event_id": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "asset_id": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "metric_id": { "type": "string", "pattern": "^(groove|attack|space|vocal|structure|feel)\\.[a-z_]+$" },
+    "analyzer_value_id": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "ear_value_id": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "analyzer_category": { "type": ["string", "null"] },
+    "ear_answer": { "type": "string" },
+    "timestamp_mismatch": {
+      "type": "object",
+      "properties": {
+        "ear_t_s": { "type": ["number", "null"] },
+        "analyzer_t_s": { "type": ["number", "null"] }
+      }
+    },
+    "split": { "enum": ["calibration", "held_out", "confirmation", "none"] },
+    "sealed": { "type": "boolean", "description": "True while the asset belongs to an open held-out or confirmation study. Sealed events are excluded from reports (SPEC REQ-VAL-07)." },
+    "created_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  },
+  "additionalProperties": false
+}

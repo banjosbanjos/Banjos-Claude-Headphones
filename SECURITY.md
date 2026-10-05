@@ -8,6 +8,10 @@ Before 1.0.0, only the latest minor release receives security fixes.
 
 Use GitHub's private vulnerability reporting on this repository (Security tab, "Report a vulnerability"). Do not open a public issue.
 
+Private vulnerability reporting is currently off. The maintainer must switch it on in the repository settings (Settings, Code security, Private vulnerability reporting).
+
+**Fallback email: not yet set.** A fallback security email address MUST be added here before the first release.
+
 Please include affected version, platform, steps to reproduce, and impact. Do not include copyrighted audio. Describe crafted files or attach ones you generated yourself.
 
 ## What to expect

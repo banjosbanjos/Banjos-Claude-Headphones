@@ -1,0 +1,9 @@
+# Default owner for everything in the repository.
+* @banjosbanjos
+
+# Files that define requirements, metrics, architecture and evaluation.
+/SPEC.md @banjosbanjos
+/METRICS.md @banjosbanjos
+/docs/adr/ @banjosbanjos
+/schemas/ @banjosbanjos
+/docs/evaluation-plan.md @banjosbanjos

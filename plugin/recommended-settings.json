@@ -1,0 +1,18 @@
+{
+  "$comment": "SPEC REQ-STORE-11. Deny rules that stop the agent from forging ear evidence or deleting data through its shell and file tools. Install with `headphones init --claude-permissions` after review.",
+  "permissions": {
+    "deny": [
+      "Bash(headphones station:*)",
+      "Bash(headphones ear:*)",
+      "Bash(headphones stated:*)",
+      "Bash(headphones link:*)",
+      "Bash(headphones forget:*)",
+      "Bash(headphones history:*)",
+      "Bash(sqlite3:*)",
+      "Edit(~/.local/share/headphones/**)",
+      "Edit(~/.config/headphones/**)",
+      "Edit(~/Library/Application Support/headphones/**)",
+      "Edit(~/Library/Preferences/headphones/**)"
+    ]
+  }
+}

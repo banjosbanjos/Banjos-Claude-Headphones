@@ -1,0 +1,8 @@
+{
+  "name": "headphones",
+  "version": "0.2.0",
+  "description": "Measure how owned audio files sound (groove, texture, space, vocal placement, structure) and record the listener's ear judgments. Draft: the MCP server is not implemented yet.",
+  "author": { "name": "Headphones maintainers" },
+  "license": "Apache-2.0",
+  "repository": "https://github.com/banjosbanjos/Banjos-Claude-Headphones"
+}

@@ -2,39 +2,63 @@
 
 **A listening harness that lets Claude Code measure music by its sound, not by what's written about it.**
 
-Status: **Specification draft 0.1.0** (pre-implementation). Nothing in this repository is runnable yet. The documents here define what will be built, how it will be checked, and how the project will be run.
+Status: **Specification draft 0.2.0** (pre-implementation). Nothing here runs yet. These documents define what will be built, how it will be checked, and how the project is run. The draft has been through ten adversarial reviews ([what they found](docs/reviews/adversarial-reviews.md)).
 
 ## The problem
 
-Ask a chatbot about a song and it answers from text: reviews, credits, Wikipedia, its own memory of those. It cannot tell you whether the snare sits behind the beat, whether the vocal is double-tracked, how wide the mix is, or the exact second a song gives you chills. None of that is written down anywhere. You only know it by listening.
+Ask a chatbot about a song and it answers from text: reviews, credits, Wikipedia, its own memory of those. It cannot tell you whether the snare sits behind the beat, whether the vocal is double-tracked, how wide the mix is, or the exact second a song gives you chills. None of that is written down. You only know it by listening.
 
-Spotify used to expose a few computed audio numbers (tempo, "energy", "danceability"). Those endpoints were closed to new apps in November 2024, and the February 2026 changes removed more, including the ISRC codes that identify recordings. Spotify's developer policy also forbids feeding Spotify content into an AI model or analyzing it. So the harness cannot get its ears from Spotify.
+Spotify can't supply the ears either. Its computed audio numbers (tempo, "energy" and the like) were closed to new apps in November 2024, and its terms forbid recording its audio or feeding Spotify content into an AI model.
 
 ## What Headphones does
 
-1. **Listens to audio you own.** DRM-free files you bought (Bandcamp, Qobuz, 7digital and similar stores) or other copies you have the right to use. Spotify audio is never captured. See [ADR-0001](docs/adr/0001-owned-audio-only.md).
-2. **Measures what can be measured.** Separates each track into stems (drums, bass, vocals, guitar, piano, other), finds the beat grid, and runs analyzers for 35 listening metrics: pocket, ghost notes, kick and bass lock, stereo placement, width, compression pumping, decay, the half-second of silence before a drop, how the song ends, and more. See [METRICS.md](METRICS.md).
-3. **Is honest about how it knows.** Every value carries an evidence class: `MEASURED`, `ESTIMATED`, `PROXY`, `EAR`, `BEHAVIORAL`, `STATED` or `TEXTUAL`. Claude must say which one it is relying on.
-4. **Keeps your ears as the final word.** Some things only a person can judge: whether your head moves in the first ten seconds, whether you want it again the moment it ends, the second the chill hits. The harness has a listening station that captures those by key-press, timed to the audio. Claude can ask for an ear score but can never write one.
-5. **Connects to Claude Code** through a local MCP server, a skill, and rendered images (spectrograms, timing plots, stereo maps) Claude can look at.
-6. **Plugs into the existing BUILD and FEEL tests** from the music profile, so "does this clear 4 of 5" stops being a guess from reviews and becomes a check against the audio.
-7. **Proves its own value.** A pre-registered benchmark compares Claude with the harness against Claude without it, using your ear scores as ground truth. See [docs/evaluation-plan.md](docs/evaluation-plan.md).
+1. **Listens to audio you own.** Files you already have, DRM-free downloads (iTunes Store, Amazon, Bandcamp, Qobuz), or CDs you've ripped. Spotify audio is never captured.
+2. **Measures what can be measured.** It splits each track into separate instrument tracks (drums, bass, vocals, guitar, piano, other), finds the beat, and checks 35 listening metrics: pocket, ghost notes, kick and bass lock, stereo placement, width, compression pumping, decay, the half-second of silence before a drop, how the song ends, and the rest. See [METRICS.md](METRICS.md).
+3. **Says how it knows.** Every answer is labeled: measured, estimated, a rough proxy, your ear, your play history, something you said, or something reviews say.
+4. **Keeps your ears as the final word.** Some things only you can judge: whether your head moves in the first ten seconds, whether you want it again the moment it ends, the second the chill hits. You mark those with single key presses while you listen. Claude can ask you a question but can never fill in your answer.
+5. **Runs your BUILD and FEEL tests on the audio,** so "does this clear 4 of 5" stops being a guess from reviews.
+6. **Proves whether it helps.** A test compares Claude with Headphones against Claude without it, using your ear as the answer key. See [docs/evaluation-plan.md](docs/evaluation-plan.md).
+
+## What you'll do
+
+1. **Install it on your own computer** (Mac, Linux or Windows). It has to run where your music files and headphones are, not in a cloud session. You can still drive it from your phone with Claude Code Remote Control.
+2. **Point it at your music.** `headphones library add ~/Music`. It uses what you already own first.
+3. **Buy a few tracks if needed.** The evaluation needs about 120 tracks plus about 40 you've never heard. Expect roughly $150 to $300 if you own none of them already, much less if you do.
+4. **Listen in a second terminal.** `headphones station`, then play a track. Tap `c` at a chill, `n` when your head or body moves, `h` when the hook lands, `g` at a gap that hits you, `m` at a kept mistake.
+5. **Answer the Quick Ear form** after each track. Eight questions, mostly yes or no, about two minutes.
+6. **Ask Claude.** "Is the drummer behind the beat on this?" "Run BUILD and FEEL on this album." Claude shows you what was measured and tells you what to check by ear.
+
+You can also mark chills and answer ear questions while listening on Spotify, without buying anything. Headphones just won't measure that audio.
+
+## A few words used here
+
+| Word | Meaning |
+|---|---|
+| Stem | One instrument's part, separated out of the finished mix by software |
+| Beat grid | Where each beat falls, worked out from the audio |
+| Station | The small program in its own terminal that plays music and catches your key presses |
+| MCP server | The connector that lets Claude Code ask Headphones for results |
+| Ground truth | Your ear answers, used as the answer key when testing whether Headphones is right |
+| Pre-registered | The test plan is written and committed before any results exist, so it can't be bent to fit them |
 
 ## Document map
 
 | Document | What it covers |
 |---|---|
-| [SPEC.md](SPEC.md) | Normative technical specification: architecture, interfaces, evidence model, processing, versioning |
-| [METRICS.md](METRICS.md) | Normative catalog of all 35 metrics plus the BUILD and FEEL composites |
-| [schemas/evaluation-record.schema.json](schemas/evaluation-record.schema.json) | JSON Schema for the stored result of an analysis |
-| [docs/evaluation-plan.md](docs/evaluation-plan.md) | How metrics are validated and how harness lift is measured |
-| [docs/security-self-assessment.md](docs/security-self-assessment.md) | Security self-assessment in the CNCF TAG Security format |
+| [SPEC.md](SPEC.md) | The technical specification |
+| [METRICS.md](METRICS.md) | All 35 metrics, how each is measured, and the BUILD and FEEL tests |
+| [schemas/](schemas/) | Data formats, with examples and a checker (`python3 tools/check_schemas.py`) |
+| [docs/evaluation-plan.md](docs/evaluation-plan.md) | How metrics are validated and how the harness's value is measured |
+| [docs/security-self-assessment.md](docs/security-self-assessment.md) | Security review in the CNCF TAG Security format |
 | [docs/privacy.md](docs/privacy.md) | What personal data exists, where it lives, how to remove it |
-| [docs/adr/](docs/adr/) | Architecture decision records |
-| [GOVERNANCE.md](GOVERNANCE.md), [MAINTAINERS.md](MAINTAINERS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md) | How the project is run |
-| [ROADMAP.md](ROADMAP.md) | Milestones and exit criteria |
-| [docs/reviews/adversarial-reviews.md](docs/reviews/adversarial-reviews.md) | The ten adversarial reviews of this spec and what changed because of them |
+| [docs/adr/](docs/adr/) | Decision records |
+| [plugin/](plugin/) | The Claude Code plugin (skill, MCP config, recommended permission rules) |
+| [GOVERNANCE.md](GOVERNANCE.md), [MAINTAINERS.md](MAINTAINERS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), [ADOPTERS.md](ADOPTERS.md) | How the project is run |
+| [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md) | Milestones and changes |
+| [docs/reviews/adversarial-reviews.md](docs/reviews/adversarial-reviews.md) | The ten adversarial reviews and what changed because of them |
 
-## License
+## License and trademarks
 
-Apache License 2.0. See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+Claude is a trademark of Anthropic, PBC. Spotify is a trademark of Spotify AB. This project is independent and is not affiliated with or endorsed by either. The names are used only to describe what the software works with.

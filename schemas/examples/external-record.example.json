@@ -1,0 +1,39 @@
+{
+  "schema_version": "0.2.0",
+  "record_id": "0192a6c4-7b1e-7c3a-9f10-2b4d6e8a0c13",
+  "created_at": "2026-10-05T19:00:00Z",
+  "external": {
+    "spotify_uri": "spotify:track:0000000000000000000000",
+    "untrusted_metadata": {
+      "artist": "Example Artist",
+      "title": "Heard on Spotify (illustrative)"
+    }
+  },
+  "values": [
+    {
+      "value_id": "0192a6c4-7b1e-4c3a-9f10-000000000099",
+      "metric_id": "feel.chill_timestamp",
+      "status": "ok",
+      "evidence_class": "EAR",
+      "confidence": null,
+      "value": {
+        "taps": 1
+      },
+      "timestamps": [
+        {
+          "t_s": 61.0,
+          "uncertainty_s": 1.0,
+          "label": "chill"
+        }
+      ],
+      "capture": {
+        "method": "external",
+        "captured_at": "2026-10-05T19:00:00Z",
+        "listen_index": 1,
+        "familiar": "no",
+        "first_listen": true,
+        "ear_tier": "quick"
+      }
+    }
+  ]
+}
