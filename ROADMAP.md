@@ -8,6 +8,8 @@ Each milestone ends with something the listener can use. Project-hygiene items (
 - [x] Ten adversarial reviews, findings fixed ([docs/reviews/adversarial-reviews.md](docs/reviews/adversarial-reviews.md)).
 - [ ] Listener confirms the two open definitions (SPEC OI-6): cold end versus hard stop, and chopped hi-hats.
 - [ ] Listener approves the spec.
+- [x] Sourcing helper `tools/find_sources.py` and [sourcing guide](docs/sourcing-guide.md), usable today.
+- [ ] Listener decides on [HEP-0001](docs/heps/0001-sourcing.md) (built-in `headphones want`). If accepted, it lands in M1.
 
 ## M1 First useful version
 

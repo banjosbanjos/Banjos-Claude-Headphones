@@ -628,6 +628,8 @@ Governance is in [GOVERNANCE.md](GOVERNANCE.md). Headphones borrows the shape of
 | OI-5 | Perceptual metrics may have no valid audio proxy. | Ceilings `EAR` or `PROXY`. Study B and C report whether proxies beat chance. |
 | OI-6 | Two metric definitions need the listener's confirmation: what "cold end" and "hard stop" mean, and what "chopped" hi-hats mean. | METRICS.md uses working definitions marked *pending listener confirmation*. |
 | OI-7 | Whether `htdemucs_6s` separates fiddle, banjo, dobro and mandolin into sensible stems. | Voice gating and timbre novelty across stems (METRICS.md §2.1, F6). Measured in M2. |
+| OI-8 | Vinyl rips carry surface noise that can trigger gap, air and breath detectors. | Assets tagged `vinyl_rip` are reported separately in every study. Noise-floor-relative gates are already used where defined (METRICS.md `structure.ending`, `structure.first_sound`). |
+| OI-9 | Getting every wanted song into the library. | Standalone helper `tools/find_sources.py` and [docs/sourcing-guide.md](docs/sourcing-guide.md). [HEP-0001](docs/heps/0001-sourcing.md) proposes a built-in `headphones want` subsystem. |
 
 ## 18. References
 

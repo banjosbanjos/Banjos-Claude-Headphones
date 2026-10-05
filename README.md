@@ -23,7 +23,7 @@ Spotify can't supply the ears either. Its computed audio numbers (tempo, "energy
 
 1. **Install it on your own computer** (Mac, Linux or Windows). It has to run where your music files and headphones are, not in a cloud session. You can still drive it from your phone with Claude Code Remote Control.
 2. **Point it at your music.** `headphones library add ~/Music`. It uses what you already own first.
-3. **Buy a few tracks if needed.** The evaluation needs about 120 tracks plus about 40 you've never heard. Expect roughly $150 to $300 if you own none of them already, much less if you do.
+3. **Fill the gaps.** Run `python3 tools/find_sources.py` on your Spotify data and it tells you what you own, the cheapest way to buy the rest, and what only exists on CD ([guide](docs/sourcing-guide.md)). The evaluation needs about 120 tracks plus about 40 you've never heard. Expect roughly $150 to $300 if you own none of them already, much less if you do.
 4. **Listen in a second terminal.** `headphones station`, then play a track. Tap `c` at a chill, `n` when your head or body moves, `h` when the hook lands, `g` at a gap that hits you, `m` at a kept mistake.
 5. **Answer the Quick Ear form** after each track. Eight questions, mostly yes or no, about two minutes.
 6. **Ask Claude.** "Is the drummer behind the beat on this?" "Run BUILD and FEEL on this album." Claude shows you what was measured and tells you what to check by ear.
@@ -52,6 +52,7 @@ You can also mark chills and answer ear questions while listening on Spotify, wi
 | [docs/security-self-assessment.md](docs/security-self-assessment.md) | Security review in the CNCF TAG Security format |
 | [docs/privacy.md](docs/privacy.md) | What personal data exists, where it lives, how to remove it |
 | [docs/adr/](docs/adr/) | Decision records |
+| [docs/sourcing-guide.md](docs/sourcing-guide.md) | Getting every song you want into your library, and the helper that builds your shopping list |
 | [plugin/](plugin/) | The Claude Code plugin (skill, MCP config, recommended permission rules) |
 | [GOVERNANCE.md](GOVERNANCE.md), [MAINTAINERS.md](MAINTAINERS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), [ADOPTERS.md](ADOPTERS.md) | How the project is run |
 | [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md) | Milestones and changes |
