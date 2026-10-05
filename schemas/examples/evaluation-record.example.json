@@ -1,0 +1,150 @@
+{
+  "schema_version": "0.1.0",
+  "record_id": "0192a6c4-7b1e-7c3a-9f10-2b4d6e8a0c12",
+  "created_at": "2026-10-05T18:20:00Z",
+  "asset": {
+    "asset_id": "3f1c9a0d5b7e2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a0c1e3b5d7f9a",
+    "pcm_sha256": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b",
+    "duration_s": 221.4,
+    "sample_rate_hz": 44100,
+    "bit_depth": 16,
+    "channels": 2,
+    "codec": "flac",
+    "lossy": false,
+    "source": "bandcamp",
+    "identity": {
+      "identity_confidence": "fingerprint",
+      "musicbrainz_recording_ids": ["5b11f4ce-a62d-471e-81fc-a69a8278c7da"],
+      "isrc": null,
+      "spotify_uri": null,
+      "untrusted_metadata": {
+        "artist": "Example Artist",
+        "title": "Illustrative Track (values are made up for this example)",
+        "album": "Example Album"
+      }
+    }
+  },
+  "engine": {
+    "version": "0.1.0",
+    "platform": "linux-x86_64-cpu",
+    "config_digest": "c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00c0ffee00",
+    "thresholds": {
+      "groove.pocket": { "ahead_ms": -8, "behind_ms": 8 },
+      "space.width": { "narrow_db": -15, "wide_db": -7 }
+    },
+    "components": [
+      {
+        "name": "separate.htdemucs_6s",
+        "version": "1.0.0",
+        "kind": "stage",
+        "weights": [
+          {
+            "name": "htdemucs_6s",
+            "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+            "license": "MIT"
+          }
+        ]
+      },
+      { "name": "groove.pocket", "version": "1.0.0", "kind": "analyzer" },
+      { "name": "space.width", "version": "1.0.0", "kind": "analyzer" },
+      { "name": "structure.ending", "version": "1.0.0", "kind": "analyzer" }
+    ]
+  },
+  "separation_quality": {
+    "mix": 0.93,
+    "stems": { "drums": 0.86, "bass": 0.81, "vocals": 0.88, "guitar": 0.64, "piano": 0.0, "other": 0.7 }
+  },
+  "values": [
+    {
+      "metric_id": "groove.pocket",
+      "status": "ok",
+      "evidence_class": "ESTIMATED",
+      "confidence": 0.71,
+      "value": {
+        "snare_backbeat_ms": { "median": 14.2, "iqr": 9.8, "ci95": [9.1, 19.6] },
+        "kick_ms": { "median": 2.1, "iqr": 6.4, "ci95": [-1.0, 5.3] },
+        "bass_ms": { "median": 4.0, "iqr": 11.2, "ci95": [-0.8, 8.9] },
+        "n_bars": 96
+      },
+      "category": "behind",
+      "method": { "name": "groove.pocket", "version": "1.0.0" },
+      "maturity": "beta"
+    },
+    {
+      "metric_id": "space.width",
+      "status": "ok",
+      "evidence_class": "MEASURED",
+      "confidence": 1.0,
+      "value": { "side_to_mid_db": -11.3, "correlation": 0.62 },
+      "category": "medium",
+      "method": { "name": "space.width", "version": "1.0.0" },
+      "maturity": "stable"
+    },
+    {
+      "metric_id": "structure.ending",
+      "status": "ok",
+      "evidence_class": "MEASURED",
+      "confidence": 0.97,
+      "value": { "fade_duration_s": 0, "final_drop_db_per_s": 41.0, "tail_ring_s": 1.6, "trailing_silence_s": 0.8 },
+      "category": "cold_end",
+      "timestamps": [{ "t_s": 218.9, "uncertainty_s": 0.05, "label": "final_hit" }],
+      "method": { "name": "structure.ending", "version": "1.0.0" },
+      "maturity": "stable"
+    },
+    {
+      "metric_id": "groove.ghost_notes",
+      "status": "abstained",
+      "reason": "no_transcription",
+      "evidence_class": "ESTIMATED",
+      "confidence": null,
+      "method": { "name": "groove.ghost_notes", "version": "0.1.0" },
+      "maturity": "experimental"
+    },
+    {
+      "metric_id": "groove.head_nod",
+      "status": "ok",
+      "evidence_class": "PROXY",
+      "proxy_for": "groove.head_nod",
+      "confidence": 0.8,
+      "value": { "time_to_stable_pulse_s": 3.7, "pulse_clarity": 0.74 },
+      "method": { "name": "groove.head_nod.proxy", "version": "0.2.0" },
+      "maturity": "beta"
+    },
+    {
+      "metric_id": "feel.chill_timestamp",
+      "status": "ok",
+      "evidence_class": "EAR",
+      "confidence": null,
+      "value": { "taps": 1 },
+      "timestamps": [{ "t_s": 134.62, "uncertainty_s": 0.06, "label": "chill" }],
+      "capture": {
+        "method": "station",
+        "captured_at": "2026-10-05T18:31:12Z",
+        "device": "wired-headphones-1",
+        "latency_correction_ms": 38,
+        "latency_iqr_ms": 21,
+        "normalization": "lufs_-14",
+        "listen_index": 1
+      }
+    }
+  ],
+  "composites": {
+    "build": {
+      "criteria": [
+        { "id": "B1", "result": "unknown", "evidence_class": "ESTIMATED", "inputs": ["space.room_sound", "attack.hand_played_feel"], "verify_by_ear": ["drum dryness"] },
+        { "id": "B5", "result": "pass", "evidence_class": "EAR", "inputs": ["duration", "structure.hook_stickiness"] }
+      ],
+      "known_pass": 1,
+      "unknown": 4,
+      "measured_bpm": 118.4,
+      "in_stated_bpm_range": true
+    },
+    "feel": {
+      "moves": [
+        { "id": "F6", "result": "detected", "evidence_class": "ESTIMATED", "timestamps": [{ "t_s": 133.9, "label": "first organ entry" }] }
+      ],
+      "count": 1
+    },
+    "route": "undetermined"
+  }
+}

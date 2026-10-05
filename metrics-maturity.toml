@@ -1,0 +1,213 @@
+# Metric maturity per analyzer version (SPEC REQ-VAL-04).
+# Changes only through a reviewed pull request that links a validation report.
+# Pre-implementation: every metric is experimental and has no analyzer yet.
+
+[metrics."groove.pocket"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.felt_tempo"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.ghost_notes"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.hihat_articulation"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.kick_bass_lock"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.fill_restraint"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."groove.head_nod"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.snare_character"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.pick_sound"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.decay_length"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.air"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.hand_played_feel"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."attack.guitar_tone"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."space.room_sound"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."space.stereo_placement"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."space.width"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."space.clarity_under_load"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."space.compression_pumping"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."vocal.breath"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."vocal.doubling"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."vocal.harmony_stacking"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."vocal.proximity"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."vocal.phrasing"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.first_sound"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.hook_stickiness"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.bassline_hummability"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.pre_chorus_tension"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.payoff"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.ending"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."structure.repeat_urge"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."feel.call_and_response"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."feel.dynamic_breathing"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."feel.kept_mistakes"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."feel.space_before_drop"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
+
+[metrics."feel.chill_timestamp"]
+analyzer = ""
+analyzer_version = ""
+maturity = "experimental"
+validation_report = ""
