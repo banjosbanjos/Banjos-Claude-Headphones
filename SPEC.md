@@ -8,7 +8,7 @@
 | Date | 2026-10-05 |
 | Editors | Project maintainers (see [MAINTAINERS.md](MAINTAINERS.md)) |
 | Normative companions | [METRICS.md](METRICS.md), [schemas/](schemas/), [docs/evaluation-plan.md](docs/evaluation-plan.md) |
-| Informative companions | [docs/security-self-assessment.md](docs/security-self-assessment.md), [docs/privacy.md](docs/privacy.md), [docs/adr/](docs/adr/) |
+| Informative companions | [docs/security-self-assessment.md](docs/security-self-assessment.md), [docs/privacy.md](docs/privacy.md) (its data inventory and Controls sections are normative for REQ-STORE-05), [docs/adr/](docs/adr/) |
 
 ## 0. Conventions
 
@@ -60,7 +60,7 @@ Give Claude Code a measured, inspectable, honest account of how a recording soun
 - G4. Expose results to Claude Code through a local MCP server, a skill, and rendered images, packaged as a Claude Code plugin.
 - G5. Evaluate the BUILD and FEEL tests against audio.
 - G6. Measure the harness's lift over a text-only baseline.
-- G7. Run entirely on the listener's machine. The only network traffic is model download at install and the optional, opt-in identity lookup (§7.2.2).
+- G7. Run entirely on the listener's machine. The only network traffic is model download and release signature verification at install or upgrade, and the optional, opt-in identity lookup (§7.2.2).
 
 ### 2.2 Non-goals
 
@@ -258,7 +258,7 @@ Implementation language: Python 3.12 or later. Distribution: one Python package 
 
 #### 7.2.2 Identity
 
-- **REQ-ID-01** The harness MUST compute a Chromaprint fingerprint for every asset.
+- **REQ-ID-01** The harness MUST compute a Chromaprint fingerprint for every asset. `fpcalc` MUST run in a sandboxed child (§10.4) and MUST receive decoded PCM from the decoder over a pipe, never the original file.
 - **REQ-ID-02** The harness MAY look up fingerprints on AcoustID to get MusicBrainz recording MBIDs and core metadata (`meta=recordings`). The lookup MUST be off until the listener enables it, and `headphones init` MUST ask with the default answer "no". The prompt MUST say what is sent: fingerprint, duration, the project's registered AcoustID client key, a User-Agent string, and the listener's IP address. It MUST NOT send file names, paths, tags or listening data.
 - **REQ-ID-03** Without a lookup, identity MUST fall back to embedded tags and MUST be marked `identity_confidence: "tags_only"`.
 - **REQ-ID-04** Metadata MUST come only through the AcoustID lookup in REQ-ID-02. Headphones MUST NOT call the MusicBrainz API directly. It MUST store only MBIDs, ISRCs, recording length and the artist, title and album strings, and MUST attribute AcoustID data as its CC BY-SA license requires.
@@ -314,14 +314,14 @@ The station is a long-lived process the listener starts in its own terminal with
 
 #### 7.4.1 Process model
 
-- **REQ-LS-12** The station MUST listen only on a Unix domain socket (mode 0600, in a 0700 directory) or a Windows named pipe restricted to the current user. The MCP server MUST be a client of that socket and MUST NOT spawn mpv, the station or analyzers itself.
+- **REQ-LS-12** The station MUST listen only on a Unix domain socket (mode 0600, in a 0700 directory) or a Windows named pipe restricted to the current user. The station MUST refuse to start if the socket directory already exists and is not owned by the current user with mode 0700. Every message on the socket MUST be validated against a published JSON Schema and rejected otherwise. The MCP server MUST be a client of that socket and MUST NOT spawn mpv, the station or analyzers itself.
 - **REQ-LS-13** If the station is not running, MCP tools that need it MUST return the error code `station_not_running` and the exact command to start it.
 - **REQ-LS-14** Only one station may run per user. A second instance MUST exit with an error naming the first.
 - **REQ-LS-15** Child processes MUST have stdout and stderr redirected to the station's log, never to an inherited terminal or protocol channel.
 
 #### 7.4.2 Playback and taps
 
-- **REQ-LS-01** Playback MUST use mpv controlled over a JSON IPC socket in a per-session 0700 directory. mpv MUST be launched with `--no-config --load-scripts=no --ytdl=no --load-auto-profiles=no --no-input-default-bindings --input-conf=<station-supplied>` and with playlist parsing disabled. The asset MUST be given to mpv as hash-verified bytes through a pipe or an already-open file descriptor (REQ-ING-07), never as a path or URL.
+- **REQ-LS-01** Playback MUST use mpv controlled over a JSON IPC socket in a per-session 0700 directory. mpv MUST be launched with `--no-config --load-scripts=no --ytdl=no --load-auto-profiles=no --no-input-default-bindings --input-conf=<station-supplied>` and with playlist parsing disabled. mpv MUST NOT parse the original container. The station MUST give mpv the asset as decoded PCM in a WAV container, produced by the sandboxed decoder from hash-verified bytes (REQ-ING-07), written to a 0600 temporary file in the cache and passed as an already-open file descriptor so seeking works. mpv MUST NOT be given a path or URL.
 - **REQ-LS-16** Taps MUST be read from the station's own terminal. mpv IPC events MUST NOT be accepted as taps. Tap time is mpv's reported `audio-pts` at the key event, minus the device output latency (REQ-LS-08).
 - **REQ-LS-02** After latency calibration, tap timestamps MUST be within 100 ms of the audio actually reaching the listener's ears at the 95th percentile, verified by the procedure in [docs/evaluation-plan.md](docs/evaluation-plan.md) §8. Bluetooth output MUST trigger a warning that latency can drift.
 - **REQ-LS-03** The station MUST offer a terminal interface. A local browser interface MAY be added. If added it MUST bind to 127.0.0.1 only, MUST reject any request whose `Host` header is not exactly `127.0.0.1:<port>`, MUST check `Origin`, MUST use a per-session token that never appears in a URL after the first exchange, and MUST NOT enable CORS.
@@ -336,7 +336,7 @@ The station is a long-lived process the listener starts in its own terminal with
 
 #### 7.4.3 Latency calibration
 
-- **REQ-LS-08** `headphones station --calibrate` MUST measure output latency for the current device: by acoustic loopback through a microphone where available, otherwise by asking the listener to tap along with a 100 BPM click train for at least 16 clicks. The method used, the median correction and the interquartile range MUST be stored per listener-assigned device label and shown with every tap on that device. Device labels are chosen by the listener and MUST NOT be taken from OS or Bluetooth device names.
+- **REQ-LS-08** `headphones station --calibrate` MUST measure output latency for the current device: by acoustic loopback through a microphone where available, otherwise by asking the listener to tap along with a 100 BPM click train for at least 16 clicks. The method used, the median correction and the interquartile range MUST be stored per listener-assigned device label and shown with every tap on that device. Device labels are chosen by the listener and MUST NOT be taken from OS or Bluetooth device names. Loopback recordings MUST be held in memory only and discarded once the latency is measured.
 
 #### 7.4.4 External playback mode
 
@@ -450,7 +450,8 @@ The BUILD and FEEL tests come from the listener's profile. Headphones evaluates 
 | `headphones calibrate report` | Analyzer versus ear agreement |
 | `headphones bench run <plan>` | Run the evaluation benchmark |
 | `headphones export` | Export everything in the privacy inventory |
-| `headphones forget <asset> [--allow-rescan]` / `forget --history` / `forget all` | Hard delete (REQ-STORE-07, docs/privacy.md) |
+| `headphones forget <asset> [--allow-rescan]` / `forget --history` / `forget --stated <id>` / `forget --external <uri>` / `forget all` | Hard delete (REQ-STORE-07, docs/privacy.md) |
+| `headphones stated retract <id>` | Mark a stated preference as no longer true, keeping the record (`retracted_at`) |
 | `headphones cache prune` | Remove stems and feature arrays |
 | `headphones mcp` | Run the MCP server on stdio |
 
@@ -472,7 +473,7 @@ class Analyzer(Protocol):
     def analyze(self, ctx: AnalysisContext) -> list[MetricResult]: ...
 ```
 
-- **REQ-PLUG-01** `analyze` MUST be a pure function of `ctx` and configuration. It MUST NOT perform network I/O, read outside `ctx`, or write outside its scratch directory. The engine enforces this by running analyzers in the sandboxed child (§10.4).
+- **REQ-PLUG-01** `analyze` MUST be a pure function of `ctx` and configuration. It MUST NOT perform network I/O, read outside `ctx`, or write outside its scratch directory. The engine enforces this where the platform allows (REQ-RES-03) and otherwise relies on review of enabled plugins.
 - **REQ-PLUG-02** Each result MUST validate against the schema's `value` definition.
 - **REQ-PLUG-03** Discovery MUST read entry-point metadata without importing the module. Only analyzers named in configuration may be imported, and only inside the sandboxed analyzer child, never in the CLI, station or MCP server process.
 
@@ -519,6 +520,7 @@ On an 8-core x86_64 CPU with 16 GB RAM and no GPU, for a 4-minute stereo track: 
 ### 10.4 Sandboxing and resource limits
 
 - **REQ-RES-01** Decoder, analyzer and mpv child processes MUST run with a memory limit (default 8 GB for analyzers, 1 GB for decode and playback), a CPU time limit proportional to duration, and no network access where the platform allows it. On Linux this MUST use a network namespace or seccomp filter. On macOS and Windows, where no supported per-process network block exists for unprivileged software, the documentation MUST say that network isolation is not provided.
+- **REQ-RES-03** On Linux, analyzer children MUST be confined to read-only access to the job's artifact directory and write access to their scratch directory (Landlock or a mount namespace). On macOS and Windows the documentation MUST say that filesystem confinement is not provided.
 - **REQ-RES-02** Analysis jobs MUST run one at a time by default. The station MUST stay responsive to taps while analysis runs.
 
 ## 11. Validation and quality
